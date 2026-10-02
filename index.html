@@ -857,11 +857,11 @@
           <div class="brand-badge">HSE Safety Checklist</div>
           <h1 class="header-title">🪜 Ladder Inspection Checklist</h1>
           <div class="header-meta">
-            <span><strong>Doc:</strong> SML/HSE/CL/10</span>
+            <span><strong>Doc:</strong> <span id="hdrDocNo">SML/HSE/CL/10</span></span>
             <span>•</span>
-            <span><strong>Rev:</strong> 00/00.00.0000</span>
+            <span><strong>Rev:</strong> <span id="hdrRevision">00/00.00.0000</span></span>
             <span>•</span>
-            <span><strong>Issued:</strong> 20th March 2026</span>
+            <span><strong>Issued:</strong> <span id="hdrIssued">20th March 2026</span></span>
           </div>
         </div>
       </div>
@@ -881,37 +881,10 @@
       <section class="card" aria-labelledby="sec-document-details">
         <div class="section-title-wrap">
           <h2 id="sec-document-details" class="section-title">Source Document Details</h2>
-          <span class="section-hint">From LADDER- CHECKLIST.xlsx</span>
+          <span class="section-hint" id="docSourceHint">Loading…</span>
         </div>
-        <div class="document-grid">
-          <div class="document-field">
-            <span class="document-label">Title</span>
-            <span class="document-value">LADDER- CHECKLIST</span>
-          </div>
-          <div class="document-field">
-            <span class="document-label">Document No.</span>
-            <span class="document-value">SML/HSE/CL/10</span>
-          </div>
-          <div class="document-field">
-            <span class="document-label">Issued Date</span>
-            <span class="document-value">20th March 2026</span>
-          </div>
-          <div class="document-field">
-            <span class="document-label">Revision No. / Date</span>
-            <span class="document-value">00/00.00.0000</span>
-          </div>
-          <div class="document-field">
-            <span class="document-label">Prepared &amp; Reviewed By</span>
-            <span class="document-value">Management Representative</span>
-          </div>
-          <div class="document-field">
-            <span class="document-label">Approved By</span>
-            <span class="document-value">Managing Director</span>
-          </div>
-          <div class="document-field">
-            <span class="document-label">Page No.</span>
-            <span class="document-value">Page 1 of 2</span>
-          </div>
+        <div class="document-grid" id="documentGrid">
+          <!-- Dynamically populated from database -->
         </div>
       </section>
       
@@ -1049,7 +1022,7 @@
         <div class="progress-bar-bg">
           <div id="progressFill" class="progress-bar-fill"></div>
         </div>
-        <span class="progress-circle-text" id="progressText">0 of 15 answered</span>
+        <span class="progress-circle-text" id="progressText">0 of 0 answered</span>
       </div>
       <div>
         <button type="submit" form="inspectionForm" id="submitBtn" class="btn-submit">
@@ -1279,10 +1252,46 @@
     }
 
     async function loadQuestionnaire() {
-      const [questions, options] = await Promise.all([
+      const [questions, options, docData] = await Promise.all([
         fetchSupabase('inspection_points?select=id,category,question,question_type,display_order,is_required,allow_remarks&is_active=eq.true&order=display_order.asc'),
-        fetchSupabase('question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc')
+        fetchSupabase('question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc'),
+        fetchSupabase('checklist_documents?select=title,doc_no,issued_date,revision,prepared_reviewed_by,approved_by,page_no,source_file&is_current=eq.true&order=id.desc&limit=1')
       ]);
+
+      // Render document metadata dynamically
+      if (docData && docData.length > 0) {
+        const doc = docData[0];
+        const grid = document.getElementById('documentGrid');
+        const hint = document.getElementById('docSourceHint');
+        if (hint) hint.textContent = doc.source_file ? `Source: ${doc.source_file}` : 'Active document';
+
+        // Update header bar
+        const issuedStr = doc.issued_date
+          ? new Date(doc.issued_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+          : '—';
+        const el = id => document.getElementById(id);
+        if (el('hdrDocNo'))    el('hdrDocNo').textContent    = doc.doc_no || '—';
+        if (el('hdrRevision')) el('hdrRevision').textContent = doc.revision || '—';
+        if (el('hdrIssued'))   el('hdrIssued').textContent   = issuedStr;
+
+        if (grid) {
+          const fields = [
+            ['Title', doc.title],
+            ['Document No.', doc.doc_no],
+            ['Issued Date', issuedStr],
+            ['Revision No. / Date', doc.revision || '—'],
+            ['Prepared & Reviewed By', doc.prepared_reviewed_by || '—'],
+            ['Approved By', doc.approved_by || '—'],
+            ['Page No.', doc.page_no || '—'],
+          ];
+          grid.innerHTML = fields.map(([label, value]) => `
+            <div class="document-field">
+              <span class="document-label">${escapeHtml(label)}</span>
+              <span class="document-value">${escapeHtml(String(value))}</span>
+            </div>
+          `).join('');
+        }
+      }
 
       const optionsByQuestion = options.reduce((map, option) => {
         if (!map[option.question_id]) map[option.question_id] = [];
