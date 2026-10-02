@@ -1,0 +1,1675 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ladder Inspection Checklist | SML/HSE/CL/10</title>
+  <meta name="description" content="Digital safety inspection checklist for industrial step and extension ladders. Compliant with HSE standard SML/HSE/CL/10.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      
+      --bg-canvas: #f6f8fa;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --border-subtle: #e2e8f0;
+      --border-focus: #f59e0b;
+      
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --text-inverse: #ffffff;
+
+      --brand-primary: #0f172a;
+      --brand-amber: #f59e0b;
+      --brand-amber-dark: #d97706;
+
+      --pass-green: #15803d;
+      --pass-green-bg: #dcfce7;
+      --pass-green-border: #86efac;
+
+      --fail-red: #b91c1c;
+      --fail-red-bg: #fee2e2;
+      --fail-red-border: #fca5a5;
+
+      --na-gray: #475569;
+      --na-gray-bg: #f1f5f9;
+      --na-gray-border: #cbd5e1;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 4px 16px -2px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 12px 32px -4px rgba(15, 23, 42, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-main);
+      background-color: var(--bg-canvas);
+      color: var(--text-main);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      padding-bottom: 110px;
+    }
+
+    /* Header Bar */
+    .top-header {
+      background: #090d16;
+      color: var(--text-inverse);
+      border-bottom: 5px solid var(--brand-amber);
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    }
+
+    .header-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .header-main {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .header-logo-panel {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .header-logo {
+      display: block;
+      width: auto;
+      height: 42px;
+      max-width: 132px;
+      object-fit: contain;
+      background: #ffffff;
+      border-radius: var(--radius-sm);
+      padding: 5px 8px;
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.18);
+    }
+
+    .header-logo.isuzu-logo {
+      max-width: 108px;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(245, 158, 11, 0.15);
+      color: #fbbf24;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .header-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-meta {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .header-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn-history-toggle {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #e2e8f0;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-history-toggle:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+
+    /* Container */
+    .container {
+      max-width: 860px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+
+    /* Card Panels */
+    .card {
+      background: var(--bg-surface);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      margin-bottom: 20px;
+      transition: border-color 0.2s;
+    }
+
+    .card:hover {
+      border-color: #cbd5e1;
+    }
+
+    .document-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .document-field {
+      min-width: 0;
+      padding: 12px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    .document-label {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .document-value {
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-weight: 700;
+      overflow-wrap: anywhere;
+    }
+
+    .section-title-wrap {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .reference-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .reference-item {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .reference-caption {
+      padding: 10px 12px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      color: #334155;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .reference-image {
+      display: block;
+      width: 100%;
+      max-height: 620px;
+      object-fit: contain;
+      background: #ffffff;
+    }
+
+    /* Grid Form */
+    .form-grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid-3, .form-grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .header-main {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .header-logo-panel {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .header-logo {
+        height: 36px;
+      }
+
+      .document-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .reference-image {
+        max-height: none;
+      }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .form-input, .form-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      transition: all 0.15s ease;
+      outline: none;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+      border-color: var(--brand-amber);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+    }
+
+    .form-input.is-invalid, .form-textarea.is-invalid {
+      border-color: var(--fail-red);
+      background: #fff8f8;
+    }
+
+    .error-msg {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--fail-red);
+    }
+
+    /* Ladder Type Selector Buttons */
+    .type-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .type-option {
+      position: relative;
+    }
+
+    .type-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .type-card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 16px;
+      background: #f8fafc;
+      border: 2px solid #cbd5e1;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #334155;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .type-option input:checked + .type-card {
+      background: #0f172a;
+      border-color: #0f172a;
+      color: #ffffff;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .type-card:hover {
+      border-color: #94a3b8;
+    }
+
+    /* Question Item */
+    .question-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .question-card.answered-pass {
+      border-left: 5px solid var(--pass-green);
+    }
+
+    .question-card.answered-fail {
+      border-left: 5px solid var(--fail-red);
+      background: #fffafa;
+    }
+
+    .question-card.answered-na {
+      border-left: 5px solid var(--na-gray);
+    }
+
+    .question-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .question-number {
+      background: #f1f5f9;
+      color: #475569;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    .question-text {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #1e293b;
+      line-height: 1.45;
+    }
+
+    /* Pass / Fail / NA Radio Chips */
+    .decision-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .decision-option {
+      position: relative;
+    }
+
+    .decision-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .decision-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      height: 42px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+
+    .decision-btn:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    /* Pass State */
+    .decision-option.pass input:checked + .decision-btn {
+      background: var(--pass-green);
+      border-color: var(--pass-green);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(21, 128, 61, 0.3);
+    }
+
+    /* Fail State */
+    .decision-option.fail input:checked + .decision-btn {
+      background: var(--fail-red);
+      border-color: var(--fail-red);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(185, 28, 28, 0.3);
+    }
+
+    /* NA State */
+    .decision-option.na input:checked + .decision-btn {
+      background: var(--na-gray);
+      border-color: var(--na-gray);
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(71, 85, 105, 0.3);
+    }
+
+    .fail-remarks-box {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px dashed #fca5a5;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Sticky Footer Action Bar */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #ffffff;
+      border-top: 1px solid var(--border-subtle);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+      z-index: 50;
+      padding: 12px 20px;
+    }
+
+    .bottom-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .progress-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .progress-circle-text {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .progress-bar-bg {
+      width: 140px;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--brand-amber);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .btn-submit {
+      background: var(--brand-amber);
+      color: #0f172a;
+      border: none;
+      padding: 13px 28px;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: var(--brand-amber-dark);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Result Modal / Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: var(--radius-lg);
+      max-width: 560px;
+      width: 100%;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .result-banner {
+      padding: 32px 24px;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .result-banner.pass {
+      background: linear-gradient(135deg, #15803d, #166534);
+    }
+
+    .result-banner.fail {
+      background: linear-gradient(135deg, #b91c1c, #991b1b);
+    }
+
+    .result-icon {
+      font-size: 3.5rem;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .result-title {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .result-subtitle {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      margin-top: 4px;
+    }
+
+    .modal-body {
+      padding: 24px;
+    }
+
+    .result-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+    }
+
+    .result-summary-table td {
+      padding: 8px 10px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .result-summary-table td:first-child {
+      font-weight: 600;
+      color: var(--text-muted);
+      width: 40%;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-secondary {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+    }
+
+    .btn-primary-dark {
+      flex: 1;
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      border: none;
+      background: #0f172a;
+      color: #ffffff;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    .btn-primary-dark:hover {
+      background: #1e293b;
+    }
+
+    /* History Drawer */
+    .history-drawer {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      bottom: 0;
+      width: 420px;
+      max-width: 90vw;
+      background: #ffffff;
+      box-shadow: -4px 0 24px rgba(0,0,0,0.15);
+      z-index: 90;
+      transition: right 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      padding: 18px 20px;
+      background: #0f172a;
+      color: #ffffff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .drawer-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .drawer-close {
+      background: transparent;
+      border: none;
+      color: #ffffff;
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .drawer-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .history-item {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      margin-bottom: 10px;
+      background: #f8fafc;
+      font-size: 0.85rem;
+    }
+
+    .history-item-top {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .badge-pass {
+      color: var(--pass-green);
+      font-weight: 800;
+    }
+
+    .badge-fail {
+      color: var(--fail-red);
+      font-weight: 800;
+    }
+
+    /* Alerts */
+    .validation-alert {
+      display: none;
+      padding: 14px 18px;
+      background: #fef2f2;
+      border-left: 4px solid var(--fail-red);
+      border-radius: var(--radius-sm);
+      color: var(--fail-red);
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .validation-alert.active {
+      display: block;
+      animation: fadeIn 0.2s ease-out;
+    }
+
+    @media print {
+      body {
+        padding-bottom: 0;
+        background: #ffffff;
+      }
+      .top-header, .bottom-bar, .btn-history-toggle, .decision-row {
+        display: none !important;
+      }
+      .card, .question-card {
+        box-shadow: none !important;
+        border: 1px solid #94a3b8 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="top-header">
+    <div class="header-inner">
+      <div class="header-main">
+        <div class="header-logo-panel" aria-label="Checklist source logos">
+          <img class="header-logo" src="assets/checklist/image1.png" alt="SML logo">
+          <img class="header-logo isuzu-logo" src="assets/checklist/image2.jpeg" alt="Isuzu logo">
+        </div>
+        <div>
+          <div class="brand-badge">HSE Safety Checklist</div>
+          <h1 class="header-title">🪜 Ladder Inspection Checklist</h1>
+          <div class="header-meta">
+            <span><strong>Doc:</strong> SML/HSE/CL/10</span>
+            <span>•</span>
+            <span><strong>Rev:</strong> 00/00.00.0000</span>
+            <span>•</span>
+            <span><strong>Issued:</strong> 20th March 2026</span>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button type="button" class="btn-history-toggle" id="openHistoryBtn">
+          📋 Records (<span id="recordCount">0</span>)
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Form -->
+  <main class="container">
+    <form id="inspectionForm" novalidate>
+
+      <!-- Source Document Details -->
+      <section class="card" aria-labelledby="sec-document-details">
+        <div class="section-title-wrap">
+          <h2 id="sec-document-details" class="section-title">Source Document Details</h2>
+          <span class="section-hint">From LADDER- CHECKLIST.xlsx</span>
+        </div>
+        <div class="document-grid">
+          <div class="document-field">
+            <span class="document-label">Title</span>
+            <span class="document-value">LADDER- CHECKLIST</span>
+          </div>
+          <div class="document-field">
+            <span class="document-label">Document No.</span>
+            <span class="document-value">SML/HSE/CL/10</span>
+          </div>
+          <div class="document-field">
+            <span class="document-label">Issued Date</span>
+            <span class="document-value">20th March 2026</span>
+          </div>
+          <div class="document-field">
+            <span class="document-label">Revision No. / Date</span>
+            <span class="document-value">00/00.00.0000</span>
+          </div>
+          <div class="document-field">
+            <span class="document-label">Prepared &amp; Reviewed By</span>
+            <span class="document-value">Management Representative</span>
+          </div>
+          <div class="document-field">
+            <span class="document-label">Approved By</span>
+            <span class="document-value">Managing Director</span>
+          </div>
+          <div class="document-field">
+            <span class="document-label">Page No.</span>
+            <span class="document-value">Page 1 of 2</span>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Ladder Information Card -->
+      <section class="card" aria-labelledby="sec-ladder-details">
+        <div class="section-title-wrap">
+          <h2 id="sec-ladder-details" class="section-title">1. Ladder & Inspector Information</h2>
+          <span class="section-hint">All fields required</span>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-group">
+            <label class="form-label" for="inspectorName">Inspector Name</label>
+            <input type="text" id="inspectorName" class="form-input" placeholder="e.g. John Doe" required autocomplete="name">
+            <span class="error-msg" id="err-inspectorName"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="inspectionDate">Inspection Date</label>
+            <input type="date" id="inspectionDate" class="form-input" required>
+            <span class="error-msg" id="err-inspectionDate"></span>
+          </div>
+        </div>
+
+        <div class="form-grid-3">
+          <div class="form-group">
+            <label class="form-label" for="ladderNo">Ladder No.</label>
+            <input type="text" id="ladderNo" class="form-input" placeholder="e.g. LDR-042" required>
+            <span class="error-msg" id="err-ladderNo"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="ladderSection">Section / Location</label>
+            <input type="text" id="ladderSection" class="form-input" placeholder="e.g. Warehouse Bay 3" required>
+            <span class="error-msg" id="err-ladderSection"></span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="heightFeet">Height (Feet)</label>
+            <input type="number" id="heightFeet" step="0.5" min="1" max="100" class="form-input" placeholder="e.g. 12" required>
+            <span class="error-msg" id="err-heightFeet"></span>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 8px;">
+          <label class="form-label">Ladder Type</label>
+          <div class="type-grid">
+            <label class="type-option">
+              <input type="radio" name="ladderType" value="extension">
+              <div class="type-card">
+                <span>🔄 Extension Ladder</span>
+              </div>
+            </label>
+            <label class="type-option">
+              <input type="radio" name="ladderType" value="step">
+              <div class="type-card">
+                <span>🪜 Step Ladder</span>
+              </div>
+            </label>
+          </div>
+          <span class="error-msg" id="err-ladderType"></span>
+        </div>
+      </section>
+
+      <!-- General Inspection Points -->
+      <section class="card" aria-labelledby="sec-general">
+        <div class="section-title-wrap">
+          <h2 id="sec-general" class="section-title">2. General Inspection (15 Points)</h2>
+          <span class="section-hint">Mandatory for all ladder types</span>
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px;">
+          Select PASS if compliant with safety specifications. Any defect must be marked as FAIL with mandatory remarks.
+        </p>
+
+        <div id="generalPointsContainer">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- Specific Type Points (Extension or Step) -->
+      <section class="card" id="specificSection" style="display: none;" aria-labelledby="sec-specific">
+        <div class="section-title-wrap">
+          <h2 id="sec-specific" class="section-title">3. Specific Inspection Points</h2>
+          <span class="section-hint" id="specificSectionHint">Type-specific requirements</span>
+        </div>
+        <div id="specificPointsContainer">
+          <!-- Populated dynamically -->
+        </div>
+      </section>
+
+      <!-- Reference Images from Workbook -->
+      <section class="card" aria-labelledby="sec-reference-images">
+        <div class="section-title-wrap">
+          <h2 id="sec-reference-images" class="section-title">4. Workbook Reference Images</h2>
+          <span class="section-hint">Embedded safety references</span>
+        </div>
+        <div class="reference-grid">
+          <figure class="reference-item">
+            <figcaption class="reference-caption">Ladder work-at-height procedure</figcaption>
+            <img class="reference-image" src="assets/checklist/image3.png" alt="Workbook reference page for ladder operation control procedure">
+          </figure>
+          <figure class="reference-item">
+            <figcaption class="reference-caption">Extension ladder angle and stepladder guidance</figcaption>
+            <img class="reference-image" src="assets/checklist/image4.png" alt="Workbook reference page showing ladder angle, 3-point rule, 4 to 1 ratio, and stepladder guidance">
+          </figure>
+          <figure class="reference-item">
+            <figcaption class="reference-caption">Working-at-height reference</figcaption>
+            <img class="reference-image" src="assets/checklist/image5.png" alt="Workbook reference page for working at height requirements">
+          </figure>
+        </div>
+      </section>
+
+      <!-- Overall Remarks Card -->
+      <section class="card" aria-labelledby="sec-remarks">
+        <div class="section-title-wrap">
+          <h2 id="sec-remarks" class="section-title">5. Overall Remarks (Optional)</h2>
+        </div>
+        <div class="form-group">
+          <textarea id="overallRemarks" class="form-textarea" rows="3" placeholder="Enter any general observations, maintenance schedule recommendations, or tag updates..."></textarea>
+        </div>
+      </section>
+
+      <!-- Validation banner -->
+      <div id="validationAlert" class="validation-alert">
+        Please complete all required fields and checklist decisions before submitting.
+      </div>
+
+    </form>
+  </main>
+
+  <!-- Sticky Bottom Bar -->
+  <div class="bottom-bar">
+    <div class="bottom-inner">
+      <div class="progress-box">
+        <div class="progress-bar-bg">
+          <div id="progressFill" class="progress-bar-fill"></div>
+        </div>
+        <span class="progress-circle-text" id="progressText">0 of 15 answered</span>
+      </div>
+      <div>
+        <button type="submit" form="inspectionForm" id="submitBtn" class="btn-submit">
+          <span>✓</span> Save Inspection
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Submission Result Modal -->
+  <div id="resultModal" class="modal-overlay">
+    <div class="modal-card">
+      <div id="resultBanner" class="result-banner pass">
+        <div id="resultIcon" class="result-icon">✓</div>
+        <h2 id="resultTitle" class="result-title">PASSED</h2>
+        <p id="resultSubtitle" class="result-subtitle">Ladder is safe for continued operational use</p>
+      </div>
+      <div class="modal-body">
+        <table class="result-summary-table">
+          <tr>
+            <td>Inspection ID:</td>
+            <td id="resInspectionId" style="font-family: var(--font-mono); font-weight: 700;">-</td>
+          </tr>
+          <tr>
+            <td>Ladder No:</td>
+            <td id="resLadderNo">-</td>
+          </tr>
+          <tr>
+            <td>Type & Height:</td>
+            <td id="resTypeHeight">-</td>
+          </tr>
+          <tr>
+            <td>Inspector:</td>
+            <td id="resInspector">-</td>
+          </tr>
+          <tr>
+            <td>Date:</td>
+            <td id="resDate">-</td>
+          </tr>
+          <tr>
+            <td>Defects / Fails:</td>
+            <td id="resDefectCount">-</td>
+          </tr>
+        </table>
+
+        <div id="failActionNotice" style="display:none; background:#fee2e2; border-left:4px solid #b91c1c; padding:10px 14px; font-size:0.85rem; color:#991b1b; font-weight:600; margin-bottom:18px; border-radius:4px;">
+          ⚠️ TAG OUT: Immediately attach a DO NOT USE tag and take this ladder out of service.
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-secondary" onclick="window.print()">🖨️ Print Report</button>
+          <button type="button" class="btn-primary-dark" id="btnNewInspection">Start New</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- History Drawer -->
+  <div id="historyDrawer" class="history-drawer">
+    <div class="drawer-header">
+      <h3 class="drawer-title">Inspection Records</h3>
+      <button type="button" class="drawer-close" id="closeHistoryBtn">&times;</button>
+    </div>
+    <div class="drawer-content" id="historyList">
+      <!-- Records list -->
+    </div>
+    <div style="padding: 16px; border-top: 1px solid var(--border-subtle); display:flex; gap:10px;">
+      <button type="button" class="btn-secondary" id="exportCsvBtn" style="font-size:0.85rem;">📥 Export CSV</button>
+      <button type="button" class="btn-secondary" id="clearRecordsBtn" style="font-size:0.85rem; color:#b91c1c;">Clear</button>
+    </div>
+  </div>
+
+  <script>
+    const SUPABASE_URL = 'https://jqamraigolylhtpvrjgm.supabase.co';
+    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_OJ3iT9XQX7QYAJKE7Nxq0g_zVodgOiN';
+
+    async function submitInspectionToDatabase(payload) {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_inspection`, {
+        method: 'POST',
+        headers: {
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ payload })
+      });
+
+      const bodyText = await response.text();
+      const body = bodyText ? JSON.parse(bodyText) : null;
+
+      if (!response.ok) {
+        const message = body?.message || bodyText || 'The inspection could not be saved.';
+        throw new Error(message);
+      }
+
+      return body;
+    }
+
+    function createSubmissionKey() {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+        return window.crypto.randomUUID();
+      }
+
+      return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c =>
+        (c ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+      );
+    }
+
+    let CHECKLIST_DATA = { general: [], extension: [], step: [] };
+
+    // State
+    let selectedType = null;
+    let answers = {}; // { [id]: { result: 'PASS'|'FAIL'|'N/A', remarks: '' } }
+
+    // Init Date to today
+    document.getElementById('inspectionDate').value = new Date().toISOString().split('T')[0];
+
+    // Render Question Cards
+    function renderQuestion(item, container) {
+      const card = document.createElement('div');
+      card.className = 'question-card';
+      card.id = `qcard-${item.id}`;
+
+      card.innerHTML = `
+        <div class="question-header">
+          <span class="question-number">#${item.id}</span>
+          <span class="question-text">${item.text}</span>
+        </div>
+        <div class="decision-row">
+          <label class="decision-option pass">
+            <input type="radio" name="ans_${item.id}" value="PASS" onchange="onAnswerChange(${item.id}, 'PASS')">
+            <div class="decision-btn">✓ PASS</div>
+          </label>
+          <label class="decision-option fail">
+            <input type="radio" name="ans_${item.id}" value="FAIL" onchange="onAnswerChange(${item.id}, 'FAIL')">
+            <div class="decision-btn">✕ FAIL</div>
+          </label>
+          <label class="decision-option na">
+            <input type="radio" name="ans_${item.id}" value="N/A" onchange="onAnswerChange(${item.id}, 'N/A')">
+            <div class="decision-btn">— N/A</div>
+          </label>
+        </div>
+        <div class="fail-remarks-box" id="failBox_${item.id}" style="display: none;">
+          <label class="form-label" style="color:var(--fail-red);">* Describe Defect / Reason for Failure</label>
+          <textarea class="form-textarea" id="remark_${item.id}" rows="2" placeholder="e.g., Cracked weld on 2nd rung..." oninput="onRemarkChange(${item.id}, this.value)"></textarea>
+          <span class="error-msg" id="err-remark-${item.id}"></span>
+        </div>
+      `;
+      container.appendChild(card);
+    }
+
+    // Populate General Questions
+    const generalContainer = document.getElementById('generalPointsContainer');
+    CHECKLIST_DATA.general.forEach(q => renderQuestion(q, generalContainer));
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function renderAnswerControl(item) {
+      if (['text', 'long_text', 'number', 'date'].includes(item.question_type)) {
+        if (item.question_type === 'long_text') {
+          return `<textarea class="form-textarea" rows="3" id="answer_${item.id}" oninput="onAnswerChange(${item.id}, this.value)"></textarea>`;
+        }
+        const inputType = item.question_type === 'number' ? 'number' : item.question_type === 'date' ? 'date' : 'text';
+        return `<input class="form-input" type="${inputType}" id="answer_${item.id}" oninput="onAnswerChange(${item.id}, this.value)">`;
+      }
+
+      const options = item.options && item.options.length ? item.options : [
+        { option_label: 'PASS', option_value: 'PASS', is_fail_value: false },
+        { option_label: 'FAIL', option_value: 'FAIL', is_fail_value: true },
+        { option_label: 'N/A', option_value: 'N/A', is_fail_value: false }
+      ];
+
+      return `
+        <div class="decision-row">
+          ${options.map(option => {
+            const visualClass = option.is_fail_value ? 'fail' : option.option_value === 'PASS' ? 'pass' : 'na';
+            return `
+              <label class="decision-option ${visualClass}">
+                <input type="radio" name="ans_${item.id}" value="${escapeHtml(option.option_value)}" onchange="onAnswerChange(${item.id}, this.value)">
+                <div class="decision-btn">${escapeHtml(option.option_label)}</div>
+              </label>
+            `;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    renderQuestion = function(item, container) {
+      const card = document.createElement('div');
+      card.className = 'question-card';
+      card.id = `qcard-${item.id}`;
+
+      card.innerHTML = `
+        <div class="question-header">
+          <span class="question-number">#${item.display_order || item.id}</span>
+          <span class="question-text">${escapeHtml(item.text)}${item.is_required ? ' *' : ''}</span>
+        </div>
+        ${renderAnswerControl(item)}
+        <div class="fail-remarks-box" id="failBox_${item.id}" style="display: none;">
+          <label class="form-label" style="color:var(--fail-red);">* Describe Defect / Reason for Failure</label>
+          <textarea class="form-textarea" id="remark_${item.id}" rows="2" placeholder="e.g., Cracked weld on 2nd rung..." oninput="onRemarkChange(${item.id}, this.value)"></textarea>
+          <span class="error-msg" id="err-remark-${item.id}"></span>
+        </div>
+      `;
+      container.appendChild(card);
+    };
+
+    async function fetchSupabase(path) {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        headers: {
+          apikey: SUPABASE_PUBLISHABLE_KEY,
+          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+        }
+      });
+      if (!response.ok) {
+        const text = await response.text();
+        throw new Error(text || 'Unable to load questionnaire data.');
+      }
+      return response.json();
+    }
+
+    async function loadQuestionnaire() {
+      const [questions, options] = await Promise.all([
+        fetchSupabase('inspection_points?select=id,category,question,question_type,display_order,is_required,allow_remarks&is_active=eq.true&order=display_order.asc'),
+        fetchSupabase('question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc')
+      ]);
+
+      const optionsByQuestion = options.reduce((map, option) => {
+        if (!map[option.question_id]) map[option.question_id] = [];
+        map[option.question_id].push(option);
+        return map;
+      }, {});
+
+      CHECKLIST_DATA = { general: [], extension: [], step: [] };
+      questions.forEach(question => {
+        const item = {
+          ...question,
+          text: question.question,
+          options: optionsByQuestion[question.id] || []
+        };
+        if (!CHECKLIST_DATA[item.category]) CHECKLIST_DATA[item.category] = [];
+        CHECKLIST_DATA[item.category].push(item);
+      });
+
+      generalContainer.innerHTML = '';
+      CHECKLIST_DATA.general.forEach(q => renderQuestion(q, generalContainer));
+      updateProgress();
+    }
+
+    function findQuestionById(id) {
+      return getActiveQuestions().find(q => Number(q.id) === Number(id));
+    }
+
+    function isFailAnswer(question, answer) {
+      if (!question || !answer) return false;
+      const option = (question.options || []).find(o => o.option_value === answer.result);
+      return answer.result === 'FAIL' || option?.is_fail_value === true;
+    }
+
+    // Ladder Type Change
+    document.querySelectorAll('input[name="ladderType"]').forEach(r => {
+      r.addEventListener('change', (e) => {
+        selectedType = e.target.value;
+        const specificSection = document.getElementById('specificSection');
+        const specificContainer = document.getElementById('specificPointsContainer');
+        const specificTitle = document.getElementById('sec-specific');
+        const specificHint = document.getElementById('specificSectionHint');
+
+        specificContainer.innerHTML = '';
+        specificSection.style.display = 'block';
+
+        if (selectedType === 'extension') {
+          specificTitle.textContent = `3. Extension Ladder Specific Points (${CHECKLIST_DATA.extension.length} Points)`;
+          specificHint.textContent = 'Locks, pulleys, ropes and sliding mechanism';
+          CHECKLIST_DATA.extension.forEach(q => renderQuestion(q, specificContainer));
+        } else if (selectedType === 'step') {
+          specificTitle.textContent = `3. Step Ladder Specific Points (${CHECKLIST_DATA.step.length} Points)`;
+          specificHint.textContent = 'Height limits, hinges and spreader locks';
+          CHECKLIST_DATA.step.forEach(q => renderQuestion(q, specificContainer));
+        }
+
+        updateProgress();
+      });
+    });
+
+    // Answer change handler
+    window.onAnswerChange = function(id, val) {
+      if (!answers[id]) answers[id] = { result: val, remarks: '' };
+      else answers[id].result = val;
+
+      const question = findQuestionById(id);
+      const card = document.getElementById(`qcard-${id}`);
+      card.classList.remove('answered-pass', 'answered-fail', 'answered-na');
+      const failBox = document.getElementById(`failBox_${id}`);
+
+      if (isFailAnswer(question, answers[id])) {
+        card.classList.add('answered-fail');
+        failBox.style.display = 'block';
+      } else if (val === 'PASS') {
+        card.classList.add('answered-pass');
+        failBox.style.display = 'none';
+      } else {
+        card.classList.add('answered-na');
+        failBox.style.display = 'none';
+      }
+
+      updateProgress();
+    };
+
+    window.onRemarkChange = function(id, text) {
+      if (!answers[id]) answers[id] = { result: 'FAIL', remarks: text };
+      else answers[id].remarks = text;
+      document.getElementById(`err-remark-${id}`).textContent = '';
+    };
+
+    // Calculate progress
+    function getActiveQuestions() {
+      const list = [...CHECKLIST_DATA.general];
+      if (selectedType && CHECKLIST_DATA[selectedType]) {
+        list.push(...CHECKLIST_DATA[selectedType]);
+      }
+      return list;
+    }
+
+    function updateProgress() {
+      const active = getActiveQuestions();
+      const total = active.length;
+      let answeredCount = 0;
+
+      active.forEach(q => {
+        if (answers[q.id] && answers[q.id].result) {
+          answeredCount++;
+        }
+      });
+
+      const pct = Math.round((answeredCount / total) * 100);
+      document.getElementById('progressFill').style.width = `${pct}%`;
+      document.getElementById('progressText').textContent = `${answeredCount} of ${total} answered`;
+    }
+
+    // Validation & Submit
+    document.getElementById('inspectionForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      let hasError = false;
+
+      // Validate Header fields
+      const inspector = document.getElementById('inspectorName');
+      const date = document.getElementById('inspectionDate');
+      const ladderNo = document.getElementById('ladderNo');
+      const section = document.getElementById('ladderSection');
+      const height = document.getElementById('heightFeet');
+      const alertBox = document.getElementById('validationAlert');
+      const submitBtn = document.getElementById('submitBtn');
+
+      // Clear errors
+      alertBox.textContent = 'Please complete all required fields and checklist decisions before submitting.';
+      document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
+      document.querySelectorAll('.form-input').forEach(el => el.classList.remove('is-invalid'));
+
+      if (!inspector.value.trim()) {
+        document.getElementById('err-inspectorName').textContent = 'Please enter inspector name.';
+        inspector.classList.add('is-invalid');
+        hasError = true;
+      }
+      if (!date.value) {
+        document.getElementById('err-inspectionDate').textContent = 'Date is required.';
+        date.classList.add('is-invalid');
+        hasError = true;
+      }
+      if (!ladderNo.value.trim()) {
+        document.getElementById('err-ladderNo').textContent = 'Ladder number is required.';
+        ladderNo.classList.add('is-invalid');
+        hasError = true;
+      }
+      if (!section.value.trim()) {
+        document.getElementById('err-ladderSection').textContent = 'Section / location is required.';
+        section.classList.add('is-invalid');
+        hasError = true;
+      }
+      if (!height.value || Number(height.value) <= 0) {
+        document.getElementById('err-heightFeet').textContent = 'Valid height in feet is required.';
+        height.classList.add('is-invalid');
+        hasError = true;
+      }
+      if (!selectedType) {
+        document.getElementById('err-ladderType').textContent = 'Please select either Extension or Step ladder.';
+        hasError = true;
+      }
+
+      // Check all active questions
+      const active = getActiveQuestions();
+      for (const q of active) {
+        const ans = answers[q.id];
+        if (q.is_required && (!ans || !ans.result)) {
+          hasError = true;
+          const card = document.getElementById(`qcard-${q.id}`);
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          card.style.borderColor = 'var(--fail-red)';
+          break;
+        }
+        if (!ans || !ans.result) continue;
+        if (isFailAnswer(q, ans) && (!ans.remarks || !ans.remarks.trim())) {
+          hasError = true;
+          document.getElementById(`err-remark-${q.id}`).textContent = 'Reason is mandatory when marking FAIL.';
+          document.getElementById(`remark_${q.id}`).focus();
+          break;
+        }
+      }
+
+      if (hasError) {
+        alertBox.classList.add('active');
+        alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      alertBox.classList.remove('active');
+
+      // Compute Overall Result
+      let failCount = 0;
+      active.forEach(q => {
+        if (isFailAnswer(q, answers[q.id])) failCount++;
+      });
+      const overallResult = failCount > 0 ? 'FAIL' : 'PASS';
+      const submissionKey = createSubmissionKey();
+      const overallRemarks = document.getElementById('overallRemarks').value.trim();
+
+      const payload = {
+        submission_key: submissionKey,
+        inspector_name: inspector.value.trim(),
+        inspection_date: date.value,
+        ladder_no: ladderNo.value.trim(),
+        section: section.value.trim(),
+        height_feet: Number(height.value),
+        ladder_type: selectedType,
+        remarks: overallRemarks,
+        results: active.filter(q => answers[q.id]?.result).map(q => ({
+          point_id: q.id,
+          result: answers[q.id].result,
+          remarks: answers[q.id].remarks || ''
+        }))
+      };
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span>...</span> Saving';
+
+      try {
+        const saved = await submitInspectionToDatabase(payload);
+
+        // Create local display/history record after the database save succeeds.
+        const record = {
+          id: saved?.id || submissionKey,
+          submissionKey,
+          timestamp: new Date().toISOString(),
+          inspector: inspector.value.trim(),
+          date: date.value,
+          ladderNo: ladderNo.value.trim(),
+          section: section.value.trim(),
+          height: height.value,
+          type: selectedType,
+          overallResult: saved?.overall_result || overallResult,
+          failCount,
+          remarks: overallRemarks,
+          answers: { ...answers },
+          savedToDatabase: true
+        };
+
+        saveRecord(record);
+        showResultModal(record);
+      } catch (error) {
+        alertBox.textContent = `Database save failed: ${error.message}`;
+        alertBox.classList.add('active');
+        alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<span>✓</span> Save Inspection';
+      }
+    });
+
+    // Storage and Records
+    function getStoredRecords() {
+      try {
+        return JSON.parse(localStorage.getItem('ladder_inspections') || '[]');
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveRecord(rec) {
+      const records = getStoredRecords();
+      records.unshift(rec);
+      localStorage.setItem('ladder_inspections', JSON.stringify(records));
+      updateRecordCount();
+    }
+
+    function updateRecordCount() {
+      const records = getStoredRecords();
+      document.getElementById('recordCount').textContent = records.length;
+    }
+
+    // Modal Display
+    function showResultModal(rec) {
+      const modal = document.getElementById('resultModal');
+      const banner = document.getElementById('resultBanner');
+      const icon = document.getElementById('resultIcon');
+      const title = document.getElementById('resultTitle');
+      const sub = document.getElementById('resultSubtitle');
+      const notice = document.getElementById('failActionNotice');
+
+      if (rec.overallResult === 'PASS') {
+        banner.className = 'result-banner pass';
+        icon.textContent = '✓';
+        title.textContent = 'INSPECTION PASSED';
+        sub.textContent = 'All safety inspection requirements verified successfully';
+        notice.style.display = 'none';
+      } else {
+        banner.className = 'result-banner fail';
+        icon.textContent = '✕';
+        title.textContent = 'INSPECTION FAILED';
+        sub.textContent = `${rec.failCount} safety defect(s) detected during checklist review`;
+        notice.style.display = 'block';
+      }
+
+      document.getElementById('resInspectionId').textContent = rec.id;
+      document.getElementById('resLadderNo').textContent = rec.ladderNo;
+      document.getElementById('resTypeHeight').textContent = `${rec.type.toUpperCase()} · ${rec.height} ft`;
+      document.getElementById('resInspector').textContent = rec.inspector;
+      document.getElementById('resDate').textContent = rec.date;
+      document.getElementById('resDefectCount').textContent = rec.failCount > 0 ? `${rec.failCount} Defect(s)` : 'None';
+
+      modal.classList.add('active');
+    }
+
+    document.getElementById('btnNewInspection').addEventListener('click', () => {
+      document.getElementById('resultModal').classList.remove('active');
+      document.getElementById('inspectionForm').reset();
+      document.getElementById('inspectionDate').value = new Date().toISOString().split('T')[0];
+      answers = {};
+      selectedType = null;
+      document.getElementById('specificSection').style.display = 'none';
+      document.getElementById('specificPointsContainer').innerHTML = '';
+      document.querySelectorAll('.question-card').forEach(c => {
+        c.classList.remove('answered-pass', 'answered-fail', 'answered-na');
+        c.style.borderColor = 'var(--border-subtle)';
+      });
+      document.querySelectorAll('.fail-remarks-box').forEach(b => b.style.display = 'none');
+      updateProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // History Drawer handlers
+    const historyDrawer = document.getElementById('historyDrawer');
+    document.getElementById('openHistoryBtn').addEventListener('click', () => {
+      renderHistoryList();
+      historyDrawer.classList.add('open');
+    });
+    document.getElementById('closeHistoryBtn').addEventListener('click', () => {
+      historyDrawer.classList.remove('open');
+    });
+
+    function renderHistoryList() {
+      const records = getStoredRecords();
+      const listEl = document.getElementById('historyList');
+      if (records.length === 0) {
+        listEl.innerHTML = '<p style="color:#64748b; font-size:0.9rem; text-align:center; padding:24px 0;">No saved inspections yet.</p>';
+        return;
+      }
+      listEl.innerHTML = records.map(r => `
+        <div class="history-item">
+          <div class="history-item-top">
+            <span>Ladder #${r.ladderNo} (${r.type})</span>
+            <span class="${r.overallResult === 'PASS' ? 'badge-pass' : 'badge-fail'}">${r.overallResult}</span>
+          </div>
+          <div style="color:#64748b;">${r.date} · Inspector: ${r.inspector} · Ref: ${r.id}</div>
+        </div>
+      `).join('');
+    }
+
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      const records = getStoredRecords();
+      if (!records.length) return alert('No records to export');
+      const rows = [
+        ['ID', 'Date', 'Ladder No', 'Type', 'Height (ft)', 'Inspector', 'Result', 'Defects', 'Overall Remarks']
+      ];
+      records.forEach(r => {
+        rows.push([
+          r.id, r.date, `"${r.ladderNo}"`, r.type, r.height, `"${r.inspector}"`, r.overallResult, r.failCount, `"${(r.remarks||'').replace(/"/g, '""')}"`
+        ]);
+      });
+      const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(',')).join('\n');
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement('a');
+      link.setAttribute('href', encodedUri);
+      link.setAttribute('download', `ladder_inspections_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    });
+
+    document.getElementById('clearRecordsBtn').addEventListener('click', () => {
+      if (confirm('Clear all saved local inspection records?')) {
+        localStorage.removeItem('ladder_inspections');
+        updateRecordCount();
+        renderHistoryList();
+      }
+    });
+
+    updateRecordCount();
+    loadQuestionnaire().catch(error => {
+      const alertBox = document.getElementById('validationAlert');
+      alertBox.textContent = `Questionnaire could not be loaded: ${error.message}`;
+      alertBox.classList.add('active');
+      document.getElementById('submitBtn').disabled = true;
+    });
+  </script>
+</body>
+</html>
