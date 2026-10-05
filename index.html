@@ -280,7 +280,7 @@
     .q-text { font-size: 0.875rem; font-weight: 500; color: var(--c-text); line-height: 1.5; }
 
     /* ─── Decision Buttons ───────────────────────────────────── */
-    .decision-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .decision-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .d-opt { position: relative; }
     .d-opt input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
 
@@ -719,7 +719,8 @@
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-secondary" onclick="window.print()">🖨️ Print Report</button>
-          <button type="button" class="btn-primary" id="btnNewInspection">Exit (New Inspection)</button>
+          <button type="button" class="btn-secondary" onclick="window.location.reload()">Exit</button>
+          <button type="button" class="btn-primary" id="btnNewInspection">New Inspection</button>
         </div>
       </div>
     </div>
