@@ -498,24 +498,29 @@
     <form id="inspectionForm" novalidate>
 
 
-      <!-- §1 Ladder & Inspector Information -->
+      <!-- §1 Employee / Personal Information -->
       <div class="section-block">
         <div class="section-header">
           <div class="section-label">
             <div class="section-num">1</div>
             <div>
-              <div class="section-title">Ladder &amp; Inspector Information</div>
-              <div class="section-hint">All fields required before submission</div>
+              <div class="section-title">Employee / Personal Information</div>
+              <div class="section-hint">Inspector details required before submission</div>
             </div>
           </div>
           <span class="section-badge" style="color:var(--c-accent);border-color:rgba(240,165,0,0.35);">Required</span>
         </div>
         <div class="section-body">
-          <div class="form-grid-2 form-row">
+          <div class="form-grid-3 form-row">
             <div>
-              <label class="form-label" for="inspectorName">Inspector Name<span class="req">*</span></label>
+              <label class="form-label" for="inspectorName">Name<span class="req">*</span></label>
               <input type="text" id="inspectorName" class="form-input" placeholder="e.g. John Perera" required autocomplete="name">
               <span class="error-msg" id="err-inspectorName"></span>
+            </div>
+            <div>
+              <label class="form-label" for="epfNumber">EPF Number<span class="req">*</span></label>
+              <input type="text" id="epfNumber" class="form-input" placeholder="e.g. 12345" required>
+              <span class="error-msg" id="err-epfNumber"></span>
             </div>
             <div>
               <label class="form-label" for="inspectionDate">Inspection Date<span class="req">*</span></label>
@@ -523,6 +528,57 @@
               <span class="error-msg" id="err-inspectionDate"></span>
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- §2 Ladder Type -->
+      <div class="section-block">
+        <div class="section-header">
+          <div class="section-label">
+            <div class="section-num">2</div>
+            <div>
+              <div class="section-title">Ladder Type</div>
+              <div class="section-hint">Select the type of ladder being inspected</div>
+            </div>
+          </div>
+          <span class="section-badge" style="color:var(--c-accent);border-color:rgba(240,165,0,0.35);">Required</span>
+        </div>
+        <div class="section-body">
+          <div class="type-grid">
+            <label class="type-option">
+              <input type="radio" name="ladderType" value="extension" id="type-extension">
+              <div class="type-card">
+                <span class="type-icon">🔄</span>
+                <span class="type-name">Extension Ladder</span>
+                <span class="type-desc">Locks, pulleys &amp; sliding mechanism</span>
+              </div>
+            </label>
+            <label class="type-option">
+              <input type="radio" name="ladderType" value="step" id="type-step">
+              <div class="type-card">
+                <span class="type-icon">🪜</span>
+                <span class="type-name">Step Ladder</span>
+                <span class="type-desc">Hinges, spreader &amp; height limits</span>
+              </div>
+            </label>
+          </div>
+          <span class="error-msg" id="err-ladderType"></span>
+        </div>
+      </div>
+
+      <!-- §3 Ladder Information -->
+      <div class="section-block">
+        <div class="section-header">
+          <div class="section-label">
+            <div class="section-num">3</div>
+            <div>
+              <div class="section-title">Ladder Information</div>
+              <div class="section-hint">Details about the specific ladder</div>
+            </div>
+          </div>
+          <span class="section-badge" style="color:var(--c-accent);border-color:rgba(240,165,0,0.35);">Required</span>
+        </div>
+        <div class="section-body">
           <div class="form-grid-3 form-row">
             <div>
               <label class="form-label" for="ladderNo">Ladder No.<span class="req">*</span></label>
@@ -540,64 +596,39 @@
               <span class="error-msg" id="err-heightFeet"></span>
             </div>
           </div>
-          <div>
-            <label class="form-label">Ladder Type<span class="req">*</span></label>
-            <div class="type-grid">
-              <label class="type-option">
-                <input type="radio" name="ladderType" value="extension" id="type-extension">
-                <div class="type-card">
-                  <span class="type-icon">🔄</span>
-                  <span class="type-name">Extension Ladder</span>
-                  <span class="type-desc">Locks, pulleys &amp; sliding mechanism</span>
-                </div>
-              </label>
-              <label class="type-option">
-                <input type="radio" name="ladderType" value="step" id="type-step">
-                <div class="type-card">
-                  <span class="type-icon">🪜</span>
-                  <span class="type-name">Step Ladder</span>
-                  <span class="type-desc">Hinges, spreader &amp; height limits</span>
-                </div>
-              </label>
-            </div>
-            <span class="error-msg" id="err-ladderType"></span>
-          </div>
         </div>
       </div>
 
-      <!-- §2 General Inspection Points -->
+      <!-- §4 General Inspection Points -->
       <div class="section-block">
         <div class="section-header">
           <div class="section-label">
-            <div class="section-num">2</div>
+            <div class="section-num">4</div>
             <div>
               <div class="section-title" id="sec-general">General Inspection</div>
               <div class="section-hint">Mandatory for all ladder types</div>
             </div>
           </div>
-          <span class="section-badge" id="generalBadge">— pts</span>
         </div>
         <div class="section-body">
           <p style="font-size:0.8rem;color:var(--c-text-2);margin-bottom:14px;padding:10px 12px;background:var(--c-surface-2);border:1px solid var(--c-border);border-radius:var(--r-sm);">
             <strong style="color:var(--c-pass);">PASS</strong> = No defect found, requirement is met.&emsp;
-            <strong style="color:var(--c-fail);">FAIL</strong> = Defect present — remark is mandatory.&emsp;
-            <strong style="color:var(--c-na);">N/A</strong> = Not applicable to this inspection.
+            <strong style="color:var(--c-fail);">FAIL</strong> = Defect present — remark is mandatory.
           </p>
           <div class="questions-list" id="generalPointsContainer"></div>
         </div>
       </div>
 
-      <!-- §3 Type-Specific Points -->
+      <!-- §5 Type-Specific Points -->
       <div class="section-block" id="specificSection">
         <div class="section-header">
           <div class="section-label">
-            <div class="section-num">3</div>
+            <div class="section-num">5</div>
             <div>
               <div class="section-title" id="sec-specific">Type-Specific Points</div>
               <div class="section-hint" id="specificSectionHint">Please select a Ladder Type above</div>
             </div>
           </div>
-          <span class="section-badge" id="specificBadge">— pts</span>
         </div>
         <div class="section-body">
           <div class="questions-list" id="specificPointsContainer">
@@ -608,11 +639,11 @@
         </div>
       </div>
 
-      <!-- §4 Reference Images -->
+      <!-- §6 Reference Images -->
       <div class="section-block">
         <div class="section-header">
           <div class="section-label">
-            <div class="section-num">4</div>
+            <div class="section-num">6</div>
             <div>
               <div class="section-title">Workbook Reference Images</div>
               <div class="section-hint">Embedded safety references from source document</div>
@@ -638,11 +669,11 @@
         </div>
       </div>
 
-      <!-- §5 Overall Remarks -->
+      <!-- §7 Overall Remarks -->
       <div class="section-block">
         <div class="section-header">
           <div class="section-label">
-            <div class="section-num">5</div>
+            <div class="section-num">7</div>
             <div>
               <div class="section-title">Overall Remarks</div>
               <div class="section-hint">General observations, maintenance recommendations (optional)</div>
@@ -703,7 +734,7 @@
         </div>
         <div class="modal-actions">
           <button type="button" class="btn-secondary" onclick="window.print()">🖨️ Print Report</button>
-          <button type="button" class="btn-primary" id="btnNewInspection">New Inspection →</button>
+          <button type="button" class="btn-primary" id="btnNewInspection">Exit (New Inspection)</button>
         </div>
       </div>
     </div>
@@ -781,13 +812,12 @@
     function renderQuestion(item, container) {
       const opts = (item.options && item.options.length) ? item.options : [
         { option_label: 'PASS', option_value: 'PASS', is_fail_value: false },
-        { option_label: 'FAIL', option_value: 'FAIL', is_fail_value: true  },
-        { option_label: 'N/A',  option_value: 'N/A',  is_fail_value: false }
+        { option_label: 'FAIL', option_value: 'FAIL', is_fail_value: true  }
       ];
 
       const decHtml = opts.map(o => {
-        const cls  = o.is_fail_value ? 'fail' : o.option_value === 'PASS' ? 'pass' : 'na';
-        const icon = o.is_fail_value ? '✕'    : o.option_value === 'PASS' ? '✓'    : '—';
+        const cls  = o.is_fail_value ? 'fail' : 'pass';
+        const icon = o.is_fail_value ? '✕'    : '✓';
         return `<label class="d-opt ${cls}">
           <input type="radio" name="ans_${item.id}" value="${esc(o.option_value)}" onchange="onAnswerChange(${item.id}, this.value)">
           <div class="d-btn">${icon} ${esc(o.option_label)}</div>
@@ -833,8 +863,6 @@
         card.classList.add('is-fail'); stat.textContent = '✕'; box.style.display = 'block';
       } else if (val === 'PASS') {
         card.classList.add('is-pass'); stat.textContent = '✓'; box.style.display = 'none';
-      } else {
-        card.classList.add('is-na');   stat.textContent = '—'; box.style.display = 'none';
       }
       updateProgress();
     };
@@ -881,7 +909,6 @@
         var con = document.getElementById('specificPointsContainer');
         var ttl = document.getElementById('sec-specific');
         var hnt = document.getElementById('specificSectionHint');
-        var bdg = document.getElementById('specificBadge');
 
         con.innerHTML = '';
         sec.style.display = 'block';
@@ -889,12 +916,10 @@
         if (selectedType === 'extension') {
           ttl.textContent = 'Extension Ladder — Specific Points';
           hnt.textContent = 'Locks, pulleys, ropes and sliding mechanism';
-          bdg.textContent = CHECKLIST_DATA.extension.length + ' pts';
           CHECKLIST_DATA.extension.forEach(function(q) { renderQuestion(q, con); });
         } else {
           ttl.textContent = 'Step Ladder — Specific Points';
           hnt.textContent = 'Height limits, hinges and spreader locks';
-          bdg.textContent = CHECKLIST_DATA.step.length + ' pts';
           CHECKLIST_DATA.step.forEach(function(q) { renderQuestion(q, con); });
         }
 
@@ -928,9 +953,6 @@
       gc.innerHTML = '';
       CHECKLIST_DATA.general.forEach(function(q) { renderQuestion(q, gc); });
 
-      var gb = document.getElementById('generalBadge');
-      if (gb) gb.textContent = CHECKLIST_DATA.general.length + ' pts';
-
       updateProgress();
       
     }
@@ -955,13 +977,15 @@
       document.querySelectorAll('.q-card').forEach(function(c) { c.classList.remove('needs-answer'); c.style.removeProperty('border-color'); });
 
       var inspector = document.getElementById('inspectorName');
+      var epf       = document.getElementById('epfNumber');
       var date      = document.getElementById('inspectionDate');
       var ladderNo  = document.getElementById('ladderNo');
       var section   = document.getElementById('ladderSection');
       var height    = document.getElementById('heightFeet');
 
-      if (!inspector.value.trim()) setErr('err-inspectorName', 'Inspector name is required.',        'inspectorName');
-      if (!date.value)             setErr('err-inspectionDate','Inspection date is required.',        'inspectionDate');
+      if (!inspector.value.trim()) setErr('err-inspectorName', 'Name is required.',           'inspectorName');
+      if (!epf.value.trim())       setErr('err-epfNumber',     'EPF Number is required.',     'epfNumber');
+      if (!date.value)             setErr('err-inspectionDate','Inspection date is required.', 'inspectionDate');
       if (!ladderNo.value.trim())  setErr('err-ladderNo',      'Ladder number is required.',          'ladderNo');
       if (!section.value.trim())   setErr('err-ladderSection', 'Section / location is required.',     'ladderSection');
       if (!height.value || Number(height.value) <= 0) setErr('err-heightFeet', 'Valid height in feet is required.', 'heightFeet');
@@ -1017,6 +1041,7 @@
       var overallResult  = failCount > 0 ? 'FAIL' : 'PASS';
       var overallRemarks = document.getElementById('overallRemarks').value.trim();
       var inspector      = document.getElementById('inspectorName').value.trim();
+      var epf            = document.getElementById('epfNumber').value.trim();
       var date           = document.getElementById('inspectionDate').value;
       var ladderNo       = document.getElementById('ladderNo').value.trim();
       var section        = document.getElementById('ladderSection').value.trim();
@@ -1025,6 +1050,7 @@
       var payload = {
         submission_key:  submissionKey,
         inspector_name:  inspector,
+        epf_number:      epf,
         inspection_date: date,
         ladder_no:       ladderNo,
         section:         section,
@@ -1074,10 +1100,10 @@
       var pass = rec.overallResult === 'PASS';
       document.getElementById('resultBanner').className   = 'modal-banner ' + (pass ? 'pass' : 'fail');
       document.getElementById('resultIcon').textContent   = pass ? '✓' : '✕';
-      document.getElementById('resultTitle').textContent  = pass ? 'INSPECTION PASSED' : 'INSPECTION FAILED';
+      document.getElementById('resultTitle').textContent  = 'INSPECTION SUBMITTED';
       document.getElementById('resultSubtitle').textContent = pass
-        ? 'All safety inspection requirements verified successfully.'
-        : rec.failCount + ' safety defect(s) detected — action required.';
+        ? 'Thank you for completing the inspection. Ladder is safe for continued use.'
+        : 'Thank you for completing the inspection. ' + rec.failCount + ' safety defect(s) detected — action required.';
       document.getElementById('failActionNotice').style.display = pass ? 'none' : 'block';
       document.getElementById('resInspectionId').textContent = rec.id;
       document.getElementById('resLadderNo').textContent     = rec.ladderNo;
@@ -1096,7 +1122,6 @@
       answers      = {};
       selectedType = null;
       document.getElementById('specificPointsContainer').innerHTML = '<div style="padding:20px;text-align:center;color:var(--c-text-2);font-size:0.85rem;background:var(--c-surface-2);border-radius:var(--r-sm);border:1px dashed var(--c-border);">Select either Extension Ladder or Step Ladder to load specific inspection points.</div>';
-      document.getElementById('specificBadge').textContent = '— pts';
       document.getElementById('sec-specific').textContent = 'Type-Specific Points';
       document.getElementById('specificSectionHint').textContent = 'Please select a Ladder Type above';
       document.querySelectorAll('.q-card').forEach(function(c) {
