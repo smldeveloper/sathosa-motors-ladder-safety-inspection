@@ -905,45 +905,10 @@
 
     /* ── Load questionnaire ── */
     async function loadQuestionnaire() {
-      const [questions, options, docData] = await Promise.all([
+      const [questions, options] = await Promise.all([
         sbFetch('inspection_points?select=id,category,question,question_type,display_order,is_required,allow_remarks&is_active=eq.true&order=display_order.asc'),
-        sbFetch('question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc'),
-        sbFetch('checklist_documents?select=title,doc_no,issued_date,revision,prepared_reviewed_by,approved_by,page_no,source_file&is_current=eq.true&order=id.desc&limit=1')
+        sbFetch('question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc')
       ]);
-
-      /* Document metadata */
-      const grid = document.getElementById('documentGrid');
-      if (docData && docData.length) {
-        const doc = docData[0];
-        const issuedStr = doc.issued_date
-          ? new Date(doc.issued_date).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })
-          : '—';
-
-        const el = function(id) { return document.getElementById(id); };
-        if (el('hdrDocNo'))    el('hdrDocNo').textContent    = doc.doc_no  || '—';
-        if (el('hdrRevision')) el('hdrRevision').textContent = doc.revision || '—';
-        if (el('hdrIssued'))   el('hdrIssued').textContent   = issuedStr;
-
-        const hint = document.getElementById('docSourceHint');
-        if (hint) hint.textContent = doc.source_file ? 'Source: ' + doc.source_file : 'Active Document';
-
-        const fields = [
-          ['Title',                  doc.title],
-          ['Document No.',           doc.doc_no],
-          ['Issued Date',            issuedStr],
-          ['Revision',               doc.revision || '—'],
-          ['Prepared & Reviewed By', doc.prepared_reviewed_by || '—'],
-          ['Approved By',            doc.approved_by || '—'],
-          ['Page No.',               doc.page_no || '—'],
-        ];
-        if (grid) {
-          grid.innerHTML = fields.map(function(pair) {
-            return '<div class="doc-cell"><div class="doc-cell-label">' + esc(pair[0]) + '</div><div class="doc-cell-value">' + esc(String(pair[1])) + '</div></div>';
-          }).join('');
-        }
-      } else {
-        if (grid) grid.innerHTML = '<div class="doc-cell" style="grid-column:1/-1;color:var(--c-text-2);font-size:0.82rem;">Document metadata unavailable.</div>';
-      }
 
       /* Map options */
       const optsByQ = options.reduce(function(m, o) {
@@ -1093,7 +1058,6 @@
           savedToDatabase: true
         };
 
-        saveRecord(record);
         showResultModal(record);
       } catch(err) {
         alertText.textContent = 'Save failed: ' + err.message;
@@ -1131,8 +1095,10 @@
       document.getElementById('inspectionDate').value = new Date().toISOString().split('T')[0];
       answers      = {};
       selectedType = null;
-      document.getElementById('specificSection').style.display = 'none';
-      document.getElementById('specificPointsContainer').innerHTML = '';
+      document.getElementById('specificPointsContainer').innerHTML = '<div style="padding:20px;text-align:center;color:var(--c-text-2);font-size:0.85rem;background:var(--c-surface-2);border-radius:var(--r-sm);border:1px dashed var(--c-border);">Select either Extension Ladder or Step Ladder to load specific inspection points.</div>';
+      document.getElementById('specificBadge').textContent = '— pts';
+      document.getElementById('sec-specific').textContent = 'Type-Specific Points';
+      document.getElementById('specificSectionHint').textContent = 'Please select a Ladder Type above';
       document.querySelectorAll('.q-card').forEach(function(c) {
         c.classList.remove('is-pass','is-fail','is-na','needs-answer');
         c.style.removeProperty('border-color');
@@ -1143,19 +1109,6 @@
       updateProgress();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
-
-    /* ── Storage ── */
-    function getStoredRecords() {
-      try { return JSON.parse(localStorage.getItem('ladder_inspections') || '[]'); }
-      catch(e) { return []; }
-    }
-
-    function saveRecord(rec) {
-      var all = getStoredRecords();
-      all.unshift(rec);
-      localStorage.setItem('ladder_inspections', JSON.stringify(all));
-      
-    }
 
     /* ── Theme Toggle ── */
     var themeToggleBtn = document.getElementById('themeToggleBtn');
@@ -1190,11 +1143,6 @@
       alertText.textContent = 'Questionnaire could not be loaded: ' + err.message;
       alertBox.classList.add('active');
       document.getElementById('submitBtn').disabled = true;
-
-      var grid = document.getElementById('documentGrid');
-      if (grid) grid.innerHTML = '<div class="doc-cell" style="grid-column:1/-1;color:var(--c-fail);font-size:0.82rem;">Failed to connect to database.</div>';
-      var hint = document.getElementById('docSourceHint');
-      if (hint) { hint.textContent = 'Offline'; hint.style.color = 'var(--c-fail)'; }
     });
   </script>
 </body>
