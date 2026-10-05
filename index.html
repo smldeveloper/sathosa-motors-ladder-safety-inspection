@@ -2,1682 +2,1199 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Ladder Inspection Checklist | SML/HSE/CL/10</title>
   <meta name="description" content="Digital safety inspection checklist for industrial step and extension ladders. Compliant with HSE standard SML/HSE/CL/10.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+
   <style>
+    /* ─── Design Tokens ─────────────────────────────────────── */
     :root {
-      --font-main: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --c-bg:          #0d0f12;
+      --c-surface:     #13161b;
+      --c-surface-2:   #1a1e26;
+      --c-surface-3:   #21262f;
+      --c-border:      #2a3040;
+      --c-border-2:    #384050;
+
+      --c-text:        #f0f2f5;
+      --c-text-2:      #8a95a8;
+      --c-text-3:      #566070;
+
+      --c-accent:      #f0a500;
+      --c-accent-dim:  rgba(240,165,0,0.12);
+      --c-accent-dark: #c98a00;
+
+      --c-pass:        #22c55e;
+      --c-pass-bg:     rgba(34,197,94,0.10);
+      --c-pass-border: rgba(34,197,94,0.30);
+
+      --c-fail:        #ef4444;
+      --c-fail-bg:     rgba(239,68,68,0.10);
+      --c-fail-border: rgba(239,68,68,0.30);
+
+      --c-na:          #64748b;
+      --c-na-bg:       rgba(100,116,139,0.10);
+      --c-na-border:   rgba(100,116,139,0.30);
+
+      --r-sm:  6px;
+      --r-md:  10px;
+      --r-lg:  14px;
+
+      --sh-lg:  0 12px 40px rgba(0,0,0,0.6);
+      --ease:   cubic-bezier(0.4, 0, 0.2, 1);
+      --bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
-      
-      --bg-canvas: #f6f8fa;
-      --bg-surface: #ffffff;
-      --bg-subtle: #f1f5f9;
-      --border-subtle: #e2e8f0;
-      --border-focus: #f59e0b;
-      
-      --text-main: #0f172a;
-      --text-muted: #64748b;
-      --text-inverse: #ffffff;
-
-      --brand-primary: #0f172a;
-      --brand-amber: #f59e0b;
-      --brand-amber-dark: #d97706;
-
-      --pass-green: #15803d;
-      --pass-green-bg: #dcfce7;
-      --pass-green-border: #86efac;
-
-      --fail-red: #b91c1c;
-      --fail-red-bg: #fee2e2;
-      --fail-red-border: #fca5a5;
-
-      --na-gray: #475569;
-      --na-gray-bg: #f1f5f9;
-      --na-gray-border: #cbd5e1;
-
-      --radius-sm: 6px;
-      --radius-md: 10px;
-      --radius-lg: 16px;
-      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
-      --shadow-md: 0 4px 16px -2px rgba(15, 23, 42, 0.08);
-      --shadow-lg: 0 12px 32px -4px rgba(15, 23, 42, 0.12);
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    /* ─── Light Mode Tokens ─────────────────────────────────── */
+    :root[data-theme="light"] {
+      --c-bg:          #f4f6f8;
+      --c-surface:     #ffffff;
+      --c-surface-2:   #f8f9fb;
+      --c-surface-3:   #f0f2f5;
+      --c-border:      #e2e8f0;
+      --c-border-2:    #cbd5e1;
+
+      --c-text:        #0f172a;
+      --c-text-2:      #475569;
+      --c-text-3:      #94a3b8;
+
+      --c-accent:      #d97706;
+      --c-accent-dim:  rgba(217,119,6,0.12);
+      --c-accent-dark: #b45309;
+
+      --c-pass:        #16a34a;
+      --c-pass-bg:     rgba(22,163,74,0.10);
+      --c-pass-border: rgba(22,163,74,0.30);
+
+      --c-fail:        #dc2626;
+      --c-fail-bg:     rgba(220,38,38,0.10);
+      --c-fail-border: rgba(220,38,38,0.30);
+
+      --c-na:          #64748b;
+      --c-na-bg:       rgba(100,116,139,0.10);
+      --c-na-border:   rgba(100,116,139,0.30);
     }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
 
     body {
       font-family: var(--font-main);
-      background-color: var(--bg-canvas);
-      color: var(--text-main);
-      line-height: 1.5;
+      background: var(--c-bg);
+      color: var(--c-text);
+      line-height: 1.55;
       -webkit-font-smoothing: antialiased;
-      padding-bottom: 110px;
+      padding-bottom: 88px;
     }
 
-    /* Header Bar */
-    .top-header {
-      background: #090d16;
-      color: var(--text-inverse);
-      border-bottom: 5px solid var(--brand-amber);
+    /* ─── Header ─────────────────────────────────────────────── */
+    .app-header {
+      background: var(--c-surface);
+      border-bottom: 1px solid var(--c-border);
       position: sticky;
       top: 0;
-      z-index: 40;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.5);
     }
 
     .header-inner {
-      max-width: 860px;
+      max-width: 900px;
       margin: 0 auto;
-      padding: 14px 20px;
+      padding: 0 20px;
+      height: 64px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
     }
 
-    .header-main {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      min-width: 0;
-    }
-
-    .header-logo-panel {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-shrink: 0;
-    }
+    .header-left { display: flex; align-items: center; gap: 14px; min-width: 0; }
+    .header-logos { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
 
     .header-logo {
-      display: block;
-      width: auto;
-      height: 42px;
-      max-width: 132px;
-      object-fit: contain;
-      background: #ffffff;
-      border-radius: var(--radius-sm);
-      padding: 5px 8px;
-      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.18);
+      height: 36px; width: auto; max-width: 110px;
+      object-fit: contain; border-radius: 4px; filter: brightness(0.95);
     }
 
-    .header-logo.isuzu-logo {
-      max-width: 108px;
-    }
+    .header-divider { width: 1px; height: 32px; background: var(--c-border-2); flex-shrink: 0; }
+    .header-text { min-width: 0; }
 
-    .brand-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(245, 158, 11, 0.15);
-      color: #fbbf24;
-      padding: 3px 10px;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-      margin-bottom: 4px;
+    .header-eyebrow {
+      font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--c-accent); margin-bottom: 1px;
     }
 
     .header-title {
-      font-size: 1.35rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 10px;
+      font-size: 0.95rem; font-weight: 700; color: var(--c-text);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
 
-    .header-meta {
-      font-size: 0.8rem;
-      color: #94a3b8;
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+    .header-docref {
+      font-family: var(--font-mono); font-size: 0.68rem; color: var(--c-text-2); white-space: nowrap;
     }
 
-    .header-meta span {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
+    .header-right { display: flex; gap: 8px; flex-shrink: 0; }
+
+    .btn-icon {
+      height: 36px; padding: 0 12px;
+      background: var(--c-surface-2); border: 1px solid var(--c-border);
+      border-radius: var(--r-sm); color: var(--c-text);
+      font-family: var(--font-main); font-size: 0.78rem; font-weight: 600;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+      transition: background 0.15s, border-color 0.15s; white-space: nowrap;
+    }
+    .btn-icon:hover { background: var(--c-surface-3); border-color: var(--c-border-2); }
+
+    /* ─── Shell ──────────────────────────────────────────────── */
+    .shell { max-width: 900px; margin: 0 auto; padding: 24px 20px; }
+
+    /* ─── Section Block ──────────────────────────────────────── */
+    .section-block {
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-radius: var(--r-lg); margin-bottom: 16px; overflow: hidden;
     }
 
-    .btn-history-toggle {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      color: #e2e8f0;
-      padding: 8px 14px;
-      border-radius: var(--radius-sm);
-      font-family: inherit;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
+    .section-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 20px; border-bottom: 1px solid var(--c-border);
+      background: var(--c-surface-2);
     }
 
-    .btn-history-toggle:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: #fff;
+    .section-label { display: flex; align-items: center; gap: 10px; }
+
+    .section-num {
+      width: 24px; height: 24px; background: var(--c-accent); color: #000;
+      font-size: 0.72rem; font-weight: 800; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
 
-    /* Container */
-    .container {
-      max-width: 860px;
-      margin: 24px auto;
-      padding: 0 16px;
+    .section-title { font-size: 0.9rem; font-weight: 700; color: var(--c-text); }
+    .section-hint  { font-size: 0.75rem; color: var(--c-text-2); margin-top: 1px; }
+
+    .section-badge {
+      font-size: 0.7rem; font-weight: 700; padding: 3px 9px;
+      border-radius: 999px; background: var(--c-surface-3);
+      border: 1px solid var(--c-border); color: var(--c-text-2);
+      letter-spacing: 0.04em; text-transform: uppercase;
     }
 
-    /* Card Panels */
-    .card {
-      background: var(--bg-surface);
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-subtle);
-      box-shadow: var(--shadow-sm);
-      padding: 24px;
-      margin-bottom: 20px;
-      transition: border-color 0.2s;
-    }
+    .section-body { padding: 20px; }
 
-    .card:hover {
-      border-color: #cbd5e1;
-    }
+    /* ─── Document Grid ──────────────────────────────────────── */
+    .doc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 
-    .document-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
+    @media (max-width: 700px) { .doc-grid { grid-template-columns: repeat(2, 1fr); } }
 
-    .document-field {
-      min-width: 0;
-      padding: 12px;
-      background: var(--bg-subtle);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-    }
+    .doc-cell { padding: 10px 12px; background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: var(--r-md); }
+    .doc-cell-label { font-size: 0.62rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--c-text-3); margin-bottom: 4px; }
+    .doc-cell-value { font-size: 0.82rem; font-weight: 600; color: var(--c-text); overflow-wrap: anywhere; }
 
-    .document-label {
-      display: block;
-      margin-bottom: 4px;
-      color: var(--text-muted);
-      font-size: 0.72rem;
-      font-weight: 800;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-    }
+    /* ─── Form Elements ──────────────────────────────────────── */
+    .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    @media (max-width: 600px) { .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; } }
 
-    .document-value {
-      color: var(--text-main);
-      font-size: 0.9rem;
-      font-weight: 700;
-      overflow-wrap: anywhere;
-    }
-
-    .section-title-wrap {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 18px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .section-title {
-      font-size: 1.15rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .section-hint {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .reference-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-    }
-
-    .reference-item {
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      overflow: hidden;
-      background: #ffffff;
-    }
-
-    .reference-caption {
-      padding: 10px 12px;
-      background: var(--bg-subtle);
-      border-bottom: 1px solid var(--border-subtle);
-      color: #334155;
-      font-size: 0.85rem;
-      font-weight: 800;
-    }
-
-    .reference-image {
-      display: block;
-      width: 100%;
-      max-height: 620px;
-      object-fit: contain;
-      background: #ffffff;
-    }
-
-    /* Grid Form */
-    .form-grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .form-grid-2 {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-
-    @media (max-width: 640px) {
-      .form-grid-3, .form-grid-2 {
-        grid-template-columns: 1fr;
-      }
-
-      .header-inner {
-        align-items: stretch;
-        flex-direction: column;
-      }
-
-      .header-main {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .header-logo-panel {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .header-logo {
-        height: 36px;
-      }
-
-      .document-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .reference-image {
-        max-height: none;
-      }
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-bottom: 14px;
-    }
+    .form-row { margin-bottom: 14px; }
 
     .form-label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #334155;
+      display: block; font-size: 0.78rem; font-weight: 600; color: var(--c-text-2);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px;
     }
+    .form-label .req { color: var(--c-accent); margin-left: 2px; }
 
     .form-input, .form-textarea {
-      width: 100%;
-      padding: 10px 14px;
-      font-family: inherit;
-      font-size: 0.95rem;
-      color: var(--text-main);
-      background: #ffffff;
-      border: 1.5px solid #cbd5e1;
-      border-radius: var(--radius-sm);
-      transition: all 0.15s ease;
-      outline: none;
+      width: 100%; background: var(--c-surface-2); border: 1.5px solid var(--c-border);
+      border-radius: var(--r-sm); color: var(--c-text); font-family: var(--font-main);
+      font-size: 0.9rem; padding: 10px 14px; outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s; -webkit-appearance: none;
     }
-
     .form-input:focus, .form-textarea:focus {
-      border-color: var(--brand-amber);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+      border-color: var(--c-accent); box-shadow: 0 0 0 3px var(--c-accent-dim);
     }
-
     .form-input.is-invalid, .form-textarea.is-invalid {
-      border-color: var(--fail-red);
-      background: #fff8f8;
+      border-color: var(--c-fail); background: var(--c-fail-bg);
     }
+    .form-input::placeholder { color: var(--c-text-3); }
+    .form-textarea { resize: vertical; }
 
-    .error-msg {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--fail-red);
-    }
+    .error-msg { display: block; margin-top: 5px; font-size: 0.75rem; font-weight: 600; color: var(--c-fail); }
 
-    /* Ladder Type Selector Buttons */
-    .type-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 6px;
-    }
-
-    .type-option {
-      position: relative;
-    }
-
-    .type-option input[type="radio"] {
-      position: absolute;
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
+    /* ─── Ladder Type ────────────────────────────────────────── */
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 6px; }
+    .type-option { position: relative; }
+    .type-option input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
 
     .type-card {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      padding: 14px 16px;
-      background: #f8fafc;
-      border: 2px solid #cbd5e1;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: #334155;
-      transition: all 0.2s ease;
-      user-select: none;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 8px; padding: 18px 14px; background: var(--c-surface-2);
+      border: 2px solid var(--c-border); border-radius: var(--r-md);
+      cursor: pointer; transition: all 0.2s var(--bounce); user-select: none; text-align: center;
     }
+    .type-card:hover { border-color: var(--c-border-2); background: var(--c-surface-3); transform: translateY(-2px); }
+    .type-icon { font-size: 2rem; line-height: 1; }
+    .type-name { font-size: 0.85rem; font-weight: 700; color: var(--c-text); }
+    .type-desc { font-size: 0.72rem; color: var(--c-text-2); }
 
     .type-option input:checked + .type-card {
-      background: #0f172a;
-      border-color: #0f172a;
-      color: #ffffff;
-      box-shadow: var(--shadow-sm);
+      border-color: var(--c-accent); background: var(--c-accent-dim); box-shadow: 0 0 0 1px var(--c-accent);
+    }
+    .type-option input:checked + .type-card .type-name { color: var(--c-accent); }
+
+    /* ─── Question Cards ─────────────────────────────────────── */
+    .questions-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .q-card {
+      background: var(--c-surface); border: 1px solid var(--c-border);
+      border-left: 4px solid transparent; border-radius: var(--r-md);
+      padding: 14px 16px; transition: border-color 0.18s, background 0.18s;
+    }
+    .q-card.is-pass { border-left-color: var(--c-pass); background: var(--c-pass-bg); }
+    .q-card.is-fail { border-left-color: var(--c-fail); background: var(--c-fail-bg); }
+    .q-card.is-na   { border-left-color: var(--c-na);   background: var(--c-na-bg); }
+    .q-card.needs-answer { border-left-color: var(--c-accent) !important; }
+
+    .q-meta { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
+
+    .q-status {
+      width: 20px; height: 20px; border-radius: 50%; flex-shrink: 0; margin-top: 1px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 800; border: 1.5px solid var(--c-border);
+      background: var(--c-surface-2); color: var(--c-text-3); transition: all 0.18s;
+    }
+    .q-card.is-pass .q-status { background: var(--c-pass); border-color: var(--c-pass); color: #fff; }
+    .q-card.is-fail .q-status { background: var(--c-fail); border-color: var(--c-fail); color: #fff; }
+    .q-card.is-na  .q-status  { background: var(--c-na);   border-color: var(--c-na);   color: #fff; }
+
+    .q-num {
+      font-family: var(--font-mono); font-size: 0.68rem; font-weight: 600;
+      color: var(--c-text-3); background: var(--c-surface-2); border: 1px solid var(--c-border);
+      padding: 2px 6px; border-radius: 4px; flex-shrink: 0; margin-top: 1px;
     }
 
-    .type-card:hover {
-      border-color: #94a3b8;
+    .q-text { font-size: 0.875rem; font-weight: 500; color: var(--c-text); line-height: 1.5; }
+
+    /* ─── Decision Buttons ───────────────────────────────────── */
+    .decision-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .d-opt { position: relative; }
+    .d-opt input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+
+    .d-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      height: 46px; border-radius: var(--r-sm); border: 1.5px solid var(--c-border);
+      background: var(--c-surface-2); color: var(--c-text-2);
+      font-family: var(--font-main); font-size: 0.82rem; font-weight: 700;
+      cursor: pointer; transition: all 0.15s; user-select: none; letter-spacing: 0.04em;
+    }
+    .d-btn:hover { background: var(--c-surface-3); border-color: var(--c-border-2); color: var(--c-text); transform: translateY(-1px); }
+
+    .d-opt.pass .d-btn { border-color: rgba(34,197,94,0.2); }
+    .d-opt.pass input:checked + .d-btn { background: var(--c-pass); border-color: var(--c-pass); color: #fff; box-shadow: 0 2px 12px rgba(34,197,94,0.35); }
+    .d-opt.fail .d-btn { border-color: rgba(239,68,68,0.2); }
+    .d-opt.fail input:checked + .d-btn { background: var(--c-fail); border-color: var(--c-fail); color: #fff; box-shadow: 0 2px 12px rgba(239,68,68,0.35); }
+    .d-opt.na .d-btn   { border-color: rgba(100,116,139,0.2); }
+    .d-opt.na input:checked + .d-btn { background: var(--c-na); border-color: var(--c-na); color: #fff; }
+
+    /* ─── Fail Remarks ───────────────────────────────────────── */
+    .fail-remarks {
+      margin-top: 12px; padding: 12px;
+      background: var(--c-fail-bg); border: 1px dashed var(--c-fail-border);
+      border-radius: var(--r-sm); animation: slideDown 0.18s both;
+    }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+    .fail-remarks-label {
+      font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.07em; color: var(--c-fail); margin-bottom: 6px;
     }
 
-    /* Question Item */
-    .question-card {
-      background: var(--bg-surface);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 16px 20px;
-      margin-bottom: 12px;
-      transition: all 0.2s ease;
+    /* ─── Reference Images ───────────────────────────────────── */
+    .ref-grid { display: flex; flex-direction: column; gap: 14px; }
+    .ref-item { border: 1px solid var(--c-border); border-radius: var(--r-md); overflow: hidden; background: var(--c-surface-2); }
+    .ref-caption {
+      padding: 8px 14px; font-size: 0.75rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em; color: var(--c-text-2);
+      border-bottom: 1px solid var(--c-border); display: flex; align-items: center; gap: 7px;
     }
+    .ref-img { display: block; width: 100%; max-height: 680px; object-fit: contain; background: #fff; }
 
-    .question-card.answered-pass {
-      border-left: 5px solid var(--pass-green);
+    /* ─── Validation Alert ───────────────────────────────────── */
+    .val-alert {
+      display: none; padding: 12px 16px;
+      background: var(--c-fail-bg); border: 1px solid var(--c-fail-border);
+      border-left: 4px solid var(--c-fail); border-radius: var(--r-sm);
+      color: var(--c-fail); font-size: 0.85rem; font-weight: 600; margin-bottom: 16px;
     }
+    .val-alert.active { display: flex; align-items: center; gap: 8px; animation: slideDown 0.2s; }
 
-    .question-card.answered-fail {
-      border-left: 5px solid var(--fail-red);
-      background: #fffafa;
-    }
-
-    .question-card.answered-na {
-      border-left: 5px solid var(--na-gray);
-    }
-
-    .question-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-
-    .question-number {
-      background: #f1f5f9;
-      color: #475569;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      font-weight: 700;
-      padding: 3px 7px;
-      border-radius: 4px;
-      flex-shrink: 0;
-      margin-top: 2px;
-    }
-
-    .question-text {
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #1e293b;
-      line-height: 1.45;
-    }
-
-    /* Pass / Fail / NA Radio Chips */
-    .decision-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .decision-option {
-      position: relative;
-    }
-
-    .decision-option input[type="radio"] {
-      position: absolute;
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .decision-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      height: 42px;
-      font-weight: 700;
-      font-size: 0.9rem;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid #cbd5e1;
-      background: #ffffff;
-      color: #475569;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      user-select: none;
-    }
-
-    .decision-btn:hover {
-      background: #f8fafc;
-      border-color: #94a3b8;
-    }
-
-    /* Pass State */
-    .decision-option.pass input:checked + .decision-btn {
-      background: var(--pass-green);
-      border-color: var(--pass-green);
-      color: #ffffff;
-      box-shadow: 0 2px 6px rgba(21, 128, 61, 0.3);
-    }
-
-    /* Fail State */
-    .decision-option.fail input:checked + .decision-btn {
-      background: var(--fail-red);
-      border-color: var(--fail-red);
-      color: #ffffff;
-      box-shadow: 0 2px 6px rgba(185, 28, 28, 0.3);
-    }
-
-    /* NA State */
-    .decision-option.na input:checked + .decision-btn {
-      background: var(--na-gray);
-      border-color: var(--na-gray);
-      color: #ffffff;
-      box-shadow: 0 2px 6px rgba(71, 85, 105, 0.3);
-    }
-
-    .fail-remarks-box {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px dashed #fca5a5;
-      animation: fadeIn 0.2s ease-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Sticky Footer Action Bar */
+    /* ─── Bottom Bar ─────────────────────────────────────────── */
     .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: #ffffff;
-      border-top: 1px solid var(--border-subtle);
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
-      z-index: 50;
-      padding: 12px 20px;
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--c-surface); border-top: 1px solid var(--c-border);
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.5); z-index: 99; padding: 0 20px;
     }
-
-    .bottom-inner {
-      max-width: 860px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .progress-box {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .progress-circle-text {
-      font-size: 0.9rem;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .progress-bar-bg {
-      width: 140px;
-      height: 8px;
-      background: #e2e8f0;
-      border-radius: 999px;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--brand-amber);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
+    .bottom-inner { max-width: 900px; margin: 0 auto; height: 68px; display: flex; align-items: center; gap: 16px; }
+    .progress-wrap { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+    .progress-track { height: 5px; background: var(--c-surface-3); border-radius: 999px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--c-accent-dark), var(--c-accent)); border-radius: 999px; transition: width 0.3s; }
+    .progress-text { font-size: 0.75rem; font-weight: 600; color: var(--c-text-2); }
+    .progress-pct { color: var(--c-accent); font-family: var(--font-mono); }
 
     .btn-submit {
-      background: var(--brand-amber);
-      color: #0f172a;
-      border: none;
-      padding: 13px 28px;
-      border-radius: var(--radius-sm);
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 2px 8px rgba(245, 158, 11, 0.4);
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
+      height: 46px; padding: 0 28px; background: var(--c-accent); color: #000;
+      border: none; border-radius: var(--r-sm); font-family: var(--font-main);
+      font-size: 0.88rem; font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase;
+      cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+      transition: all 0.2s var(--bounce); white-space: nowrap; flex-shrink: 0;
     }
+    .btn-submit:hover:not(:disabled) { background: #ffc024; transform: translateY(-2px); box-shadow: 0 4px 16px rgba(240,165,0,0.4); }
+    .btn-submit:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    .btn-submit:hover:not(:disabled) {
-      background: var(--brand-amber-dark);
-      color: #ffffff;
-      transform: translateY(-1px);
-    }
-
-    .btn-submit:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-
-    /* Result Modal / Overlay */
+    /* ─── Modal ──────────────────────────────────────────────── */
     .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(15, 23, 42, 0.6);
-      backdrop-filter: blur(4px);
-      z-index: 100;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      position: fixed; inset: 0; background: rgba(5,8,12,0.8);
+      backdrop-filter: blur(6px); z-index: 200;
+      display: none; align-items: center; justify-content: center; padding: 20px;
     }
-
-    .modal-overlay.active {
-      display: flex;
-      animation: fadeIn 0.25s ease-out;
-    }
+    .modal-overlay.active { display: flex; animation: fadeIn 0.25s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popIn  { from { opacity: 0; transform: scale(0.94) translateY(16px); } to { opacity: 1; transform: scale(1); } }
 
     .modal-card {
-      background: #ffffff;
-      border-radius: var(--radius-lg);
-      max-width: 560px;
-      width: 100%;
-      box-shadow: var(--shadow-lg);
-      overflow: hidden;
-      border: 1px solid var(--border-subtle);
+      background: var(--c-surface); border: 1px solid var(--c-border-2);
+      border-radius: var(--r-lg); max-width: 520px; width: 100%;
+      box-shadow: var(--sh-lg); overflow: hidden; animation: popIn 0.3s var(--bounce);
     }
 
-    .result-banner {
-      padding: 32px 24px;
-      text-align: center;
-      color: #ffffff;
+    .modal-banner { padding: 36px 28px; text-align: center; }
+    .modal-banner.pass { background: linear-gradient(135deg, #14532d, #166534); }
+    .modal-banner.fail { background: linear-gradient(135deg, #7f1d1d, #991b1b); }
+    .modal-result-icon { font-size: 4rem; line-height: 1; margin-bottom: 10px; display: block; }
+    .modal-result-title { font-size: 2rem; font-weight: 900; letter-spacing: -0.02em; color: #fff; }
+    .modal-result-sub { font-size: 0.88rem; color: rgba(255,255,255,0.75); margin-top: 6px; }
+
+    .modal-body { padding: 24px; }
+    .modal-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: 20px; }
+    .modal-table td { padding: 9px 10px; border-bottom: 1px solid var(--c-border); }
+    .modal-table td:first-child { font-weight: 600; color: var(--c-text-2); width: 40%; }
+    .modal-table td:last-child { font-weight: 600; color: var(--c-text); }
+
+    .tagout-notice {
+      display: none; background: var(--c-fail-bg); border: 1px solid var(--c-fail-border);
+      border-left: 4px solid var(--c-fail); border-radius: var(--r-sm);
+      padding: 12px 14px; margin-bottom: 18px;
+      font-size: 0.82rem; font-weight: 700; color: var(--c-fail);
     }
 
-    .result-banner.pass {
-      background: linear-gradient(135deg, #15803d, #166534);
-    }
-
-    .result-banner.fail {
-      background: linear-gradient(135deg, #b91c1c, #991b1b);
-    }
-
-    .result-icon {
-      font-size: 3.5rem;
-      line-height: 1;
-      margin-bottom: 8px;
-    }
-
-    .result-title {
-      font-size: 2rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-    }
-
-    .result-subtitle {
-      font-size: 0.95rem;
-      opacity: 0.9;
-      margin-top: 4px;
-    }
-
-    .modal-body {
-      padding: 24px;
-    }
-
-    .result-summary-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-    }
-
-    .result-summary-table td {
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border-subtle);
-    }
-
-    .result-summary-table td:first-child {
-      font-weight: 600;
-      color: var(--text-muted);
-      width: 40%;
-    }
-
-    .modal-actions {
-      display: flex;
-      gap: 10px;
-    }
-
+    .modal-actions { display: flex; gap: 10px; }
     .btn-secondary {
-      flex: 1;
-      padding: 12px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid #cbd5e1;
-      background: #ffffff;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 0.95rem;
-      color: #334155;
-      cursor: pointer;
+      flex: 1; height: 44px; background: var(--c-surface-2); border: 1.5px solid var(--c-border);
+      border-radius: var(--r-sm); color: var(--c-text); font-family: var(--font-main);
+      font-size: 0.82rem; font-weight: 700; cursor: pointer; transition: background 0.15s;
     }
-
-    .btn-secondary:hover {
-      background: #f8fafc;
+    .btn-secondary:hover { background: var(--c-surface-3); }
+    .btn-primary {
+      flex: 1; height: 44px; background: var(--c-accent); border: none;
+      border-radius: var(--r-sm); color: #000; font-family: var(--font-main);
+      font-size: 0.82rem; font-weight: 800; cursor: pointer; transition: background 0.15s;
     }
+    .btn-primary:hover { background: #ffc024; }
 
-    .btn-primary-dark {
-      flex: 1;
-      padding: 12px;
-      border-radius: var(--radius-sm);
-      border: none;
-      background: #0f172a;
-      color: #ffffff;
-      font-family: inherit;
-      font-weight: 700;
-      font-size: 0.95rem;
-      cursor: pointer;
+    /* ─── Drawer ─────────────────────────────────────────────── */
+    .drawer {
+      position: fixed; top: 0; right: -100%; bottom: 0; width: 400px; max-width: 93vw;
+      background: var(--c-surface); border-left: 1px solid var(--c-border);
+      box-shadow: -8px 0 40px rgba(0,0,0,0.5); z-index: 150;
+      display: flex; flex-direction: column; transition: right 0.28s var(--ease);
     }
+    .drawer.open { right: 0; }
 
-    .btn-primary-dark:hover {
-      background: #1e293b;
+    .drawer-head {
+      padding: 18px 20px; background: var(--c-surface-2); border-bottom: 1px solid var(--c-border);
+      display: flex; align-items: center; justify-content: space-between;
     }
+    .drawer-head-title { font-size: 0.9rem; font-weight: 700; color: var(--c-text); }
+    .drawer-close { background: transparent; border: none; color: var(--c-text-2); cursor: pointer; font-size: 1.3rem; line-height: 1; transition: color 0.12s; }
+    .drawer-close:hover { color: var(--c-text); }
+    .drawer-body { flex: 1; overflow-y: auto; padding: 14px; }
+    .drawer-foot { padding: 14px; border-top: 1px solid var(--c-border); display: flex; gap: 8px; }
 
-    /* History Drawer */
-    .history-drawer {
-      position: fixed;
-      top: 0;
-      right: -100%;
-      bottom: 0;
-      width: 420px;
-      max-width: 90vw;
-      background: #ffffff;
-      box-shadow: -4px 0 24px rgba(0,0,0,0.15);
-      z-index: 90;
-      transition: right 0.3s ease;
-      display: flex;
-      flex-direction: column;
+    .history-item { padding: 12px 14px; background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: var(--r-md); margin-bottom: 8px; }
+    .history-item-top { display: flex; align-items: center; justify-content: space-between; font-weight: 700; margin-bottom: 4px; color: var(--c-text); font-size: 0.85rem; }
+    .history-item-sub { color: var(--c-text-2); font-size: 0.75rem; }
+
+    .badge-pass { padding: 2px 8px; border-radius: 999px; background: var(--c-pass-bg); border: 1px solid var(--c-pass-border); color: var(--c-pass); font-size: 0.7rem; font-weight: 800; }
+    .badge-fail { padding: 2px 8px; border-radius: 999px; background: var(--c-fail-bg); border: 1px solid var(--c-fail-border); color: var(--c-fail); font-size: 0.7rem; font-weight: 800; }
+
+    /* ─── Skeleton ───────────────────────────────────────────── */
+    .skeleton {
+      background: linear-gradient(90deg, var(--c-surface-2) 25%, var(--c-surface-3) 50%, var(--c-surface-2) 75%);
+      background-size: 200% 100%; border-radius: 4px; animation: shimmer 1.5s infinite;
     }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-    .history-drawer.open {
-      right: 0;
-    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .status-dot.live { background: var(--c-pass); box-shadow: 0 0 6px var(--c-pass); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
 
-    .drawer-header {
-      padding: 18px 20px;
-      background: #0f172a;
-      color: #ffffff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .drawer-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
-
-    .drawer-close {
-      background: transparent;
-      border: none;
-      color: #ffffff;
-      font-size: 1.4rem;
-      cursor: pointer;
-    }
-
-    .drawer-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-    }
-
-    .history-item {
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-sm);
-      padding: 12px;
-      margin-bottom: 10px;
-      background: #f8fafc;
-      font-size: 0.85rem;
-    }
-
-    .history-item-top {
-      display: flex;
-      justify-content: space-between;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .badge-pass {
-      color: var(--pass-green);
-      font-weight: 800;
-    }
-
-    .badge-fail {
-      color: var(--fail-red);
-      font-weight: 800;
-    }
-
-    /* Alerts */
-    .validation-alert {
-      display: none;
-      padding: 14px 18px;
-      background: #fef2f2;
-      border-left: 4px solid var(--fail-red);
-      border-radius: var(--radius-sm);
-      color: var(--fail-red);
-      font-weight: 600;
-      font-size: 0.9rem;
-      margin-bottom: 16px;
-    }
-
-    .validation-alert.active {
-      display: block;
-      animation: fadeIn 0.2s ease-out;
-    }
-
+    /* ─── Print ──────────────────────────────────────────────── */
     @media print {
-      body {
-        padding-bottom: 0;
-        background: #ffffff;
-      }
-      .top-header, .bottom-bar, .btn-history-toggle, .decision-row {
-        display: none !important;
-      }
-      .card, .question-card {
-        box-shadow: none !important;
-        border: 1px solid #94a3b8 !important;
-      }
+      body { background: #fff; color: #000; padding-bottom: 0; }
+      .app-header, .bottom-bar, .drawer, .modal-overlay { display: none !important; }
+      .section-block { border: 1px solid #ccc; box-shadow: none; background: #fff; }
+      .q-card { border: 1px solid #ccc; background: #fff; }
+      .decision-row { display: none; }
+      ::-webkit-input-placeholder { color: transparent !important; }
+      ::-moz-placeholder { color: transparent !important; }
+      :-ms-input-placeholder { color: transparent !important; }
+      ::placeholder { color: transparent !important; }
+    }
+
+    @media (max-width: 600px) {
+      .header-logos, .header-divider { display: none; }
+      .shell { padding: 16px 14px; }
+      .btn-submit { padding: 0 18px; font-size: 0.78rem; }
     }
   </style>
 </head>
 <body>
+  <script>
+    (function() {
+      var saved = localStorage.getItem('theme');
+      if (saved === 'light' || (!saved && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
 
-  <!-- Top Header -->
-  <header class="top-header">
+  <!-- ═══ HEADER ════════════════════════════════════════════════ -->
+  <header class="app-header" role="banner">
     <div class="header-inner">
-      <div class="header-main">
-        <div class="header-logo-panel" aria-label="Checklist source logos">
+      <div class="header-left">
+        <div class="header-logos" aria-label="Organisation logos">
           <img class="header-logo" src="assets/checklist/image1.png" alt="SML logo">
-          <img class="header-logo isuzu-logo" src="assets/checklist/image2.jpeg" alt="Isuzu logo">
+          <img class="header-logo" src="assets/checklist/image2.jpeg" alt="Isuzu logo" style="max-width:90px;">
         </div>
-        <div>
-          <div class="brand-badge">HSE Safety Checklist</div>
-          <h1 class="header-title">🪜 Ladder Inspection Checklist</h1>
-          <div class="header-meta">
-            <span><strong>Doc:</strong> <span id="hdrDocNo">SML/HSE/CL/10</span></span>
-            <span>•</span>
-            <span><strong>Rev:</strong> <span id="hdrRevision">00/00.00.0000</span></span>
-            <span>•</span>
-            <span><strong>Issued:</strong> <span id="hdrIssued">20th March 2026</span></span>
-          </div>
+        <div class="header-divider" aria-hidden="true"></div>
+        <div class="header-text">
+          <div class="header-eyebrow">HSE Safety System</div>
+          <div class="header-title">Ladder Inspection Checklist</div>
+
         </div>
       </div>
-      <div>
-        <button type="button" class="btn-history-toggle" id="openHistoryBtn">
-          📋 Records (<span id="recordCount">0</span>)
+      <div class="header-right">
+        <button type="button" class="btn-icon" id="themeToggleBtn" aria-label="Toggle theme">
+          <svg id="themeIcon" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
         </button>
       </div>
     </div>
   </header>
-
-  <!-- Main Content Form -->
-  <main class="container">
+  <!-- ═══ MAIN ══════════════════════════════════════════════════ -->
+  <main class="shell" role="main">
     <form id="inspectionForm" novalidate>
 
-      <!-- Source Document Details -->
-      <section class="card" aria-labelledby="sec-document-details">
-        <div class="section-title-wrap">
-          <h2 id="sec-document-details" class="section-title">Source Document Details</h2>
-          <span class="section-hint" id="docSourceHint">Loading…</span>
-        </div>
-        <div class="document-grid" id="documentGrid">
-          <!-- Dynamically populated from database -->
-        </div>
-      </section>
-      
-      <!-- Ladder Information Card -->
-      <section class="card" aria-labelledby="sec-ladder-details">
-        <div class="section-title-wrap">
-          <h2 id="sec-ladder-details" class="section-title">1. Ladder & Inspector Information</h2>
-          <span class="section-hint">All fields required</span>
-        </div>
 
-        <div class="form-grid-2">
-          <div class="form-group">
-            <label class="form-label" for="inspectorName">Inspector Name</label>
-            <input type="text" id="inspectorName" class="form-input" placeholder="e.g. John Doe" required autocomplete="name">
-            <span class="error-msg" id="err-inspectorName"></span>
+      <!-- §1 Ladder & Inspector Information -->
+      <div class="section-block">
+        <div class="section-header">
+          <div class="section-label">
+            <div class="section-num">1</div>
+            <div>
+              <div class="section-title">Ladder &amp; Inspector Information</div>
+              <div class="section-hint">All fields required before submission</div>
+            </div>
           </div>
-
-          <div class="form-group">
-            <label class="form-label" for="inspectionDate">Inspection Date</label>
-            <input type="date" id="inspectionDate" class="form-input" required>
-            <span class="error-msg" id="err-inspectionDate"></span>
+          <span class="section-badge" style="color:var(--c-accent);border-color:rgba(240,165,0,0.35);">Required</span>
+        </div>
+        <div class="section-body">
+          <div class="form-grid-2 form-row">
+            <div>
+              <label class="form-label" for="inspectorName">Inspector Name<span class="req">*</span></label>
+              <input type="text" id="inspectorName" class="form-input" placeholder="e.g. John Perera" required autocomplete="name">
+              <span class="error-msg" id="err-inspectorName"></span>
+            </div>
+            <div>
+              <label class="form-label" for="inspectionDate">Inspection Date<span class="req">*</span></label>
+              <input type="date" id="inspectionDate" class="form-input" required>
+              <span class="error-msg" id="err-inspectionDate"></span>
+            </div>
+          </div>
+          <div class="form-grid-3 form-row">
+            <div>
+              <label class="form-label" for="ladderNo">Ladder No.<span class="req">*</span></label>
+              <input type="text" id="ladderNo" class="form-input" placeholder="e.g. LDR-042" required>
+              <span class="error-msg" id="err-ladderNo"></span>
+            </div>
+            <div>
+              <label class="form-label" for="ladderSection">Section / Location<span class="req">*</span></label>
+              <input type="text" id="ladderSection" class="form-input" placeholder="e.g. Warehouse Bay 3" required>
+              <span class="error-msg" id="err-ladderSection"></span>
+            </div>
+            <div>
+              <label class="form-label" for="heightFeet">Height (Feet)<span class="req">*</span></label>
+              <input type="number" id="heightFeet" step="0.5" min="1" max="100" class="form-input" placeholder="e.g. 12" required>
+              <span class="error-msg" id="err-heightFeet"></span>
+            </div>
+          </div>
+          <div>
+            <label class="form-label">Ladder Type<span class="req">*</span></label>
+            <div class="type-grid">
+              <label class="type-option">
+                <input type="radio" name="ladderType" value="extension" id="type-extension">
+                <div class="type-card">
+                  <span class="type-icon">🔄</span>
+                  <span class="type-name">Extension Ladder</span>
+                  <span class="type-desc">Locks, pulleys &amp; sliding mechanism</span>
+                </div>
+              </label>
+              <label class="type-option">
+                <input type="radio" name="ladderType" value="step" id="type-step">
+                <div class="type-card">
+                  <span class="type-icon">🪜</span>
+                  <span class="type-name">Step Ladder</span>
+                  <span class="type-desc">Hinges, spreader &amp; height limits</span>
+                </div>
+              </label>
+            </div>
+            <span class="error-msg" id="err-ladderType"></span>
           </div>
         </div>
+      </div>
 
-        <div class="form-grid-3">
-          <div class="form-group">
-            <label class="form-label" for="ladderNo">Ladder No.</label>
-            <input type="text" id="ladderNo" class="form-input" placeholder="e.g. LDR-042" required>
-            <span class="error-msg" id="err-ladderNo"></span>
+      <!-- §2 General Inspection Points -->
+      <div class="section-block">
+        <div class="section-header">
+          <div class="section-label">
+            <div class="section-num">2</div>
+            <div>
+              <div class="section-title" id="sec-general">General Inspection</div>
+              <div class="section-hint">Mandatory for all ladder types</div>
+            </div>
           </div>
+          <span class="section-badge" id="generalBadge">— pts</span>
+        </div>
+        <div class="section-body">
+          <p style="font-size:0.8rem;color:var(--c-text-2);margin-bottom:14px;padding:10px 12px;background:var(--c-surface-2);border:1px solid var(--c-border);border-radius:var(--r-sm);">
+            <strong style="color:var(--c-pass);">PASS</strong> = No defect found, requirement is met.&emsp;
+            <strong style="color:var(--c-fail);">FAIL</strong> = Defect present — remark is mandatory.&emsp;
+            <strong style="color:var(--c-na);">N/A</strong> = Not applicable to this inspection.
+          </p>
+          <div class="questions-list" id="generalPointsContainer"></div>
+        </div>
+      </div>
 
-          <div class="form-group">
-            <label class="form-label" for="ladderSection">Section / Location</label>
-            <input type="text" id="ladderSection" class="form-input" placeholder="e.g. Warehouse Bay 3" required>
-            <span class="error-msg" id="err-ladderSection"></span>
+      <!-- §3 Type-Specific Points -->
+      <div class="section-block" id="specificSection">
+        <div class="section-header">
+          <div class="section-label">
+            <div class="section-num">3</div>
+            <div>
+              <div class="section-title" id="sec-specific">Type-Specific Points</div>
+              <div class="section-hint" id="specificSectionHint">Please select a Ladder Type above</div>
+            </div>
           </div>
-
-          <div class="form-group">
-            <label class="form-label" for="heightFeet">Height (Feet)</label>
-            <input type="number" id="heightFeet" step="0.5" min="1" max="100" class="form-input" placeholder="e.g. 12" required>
-            <span class="error-msg" id="err-heightFeet"></span>
+          <span class="section-badge" id="specificBadge">— pts</span>
+        </div>
+        <div class="section-body">
+          <div class="questions-list" id="specificPointsContainer">
+            <div style="padding:20px;text-align:center;color:var(--c-text-2);font-size:0.85rem;background:var(--c-surface-2);border-radius:var(--r-sm);border:1px dashed var(--c-border);">
+              Select either Extension Ladder or Step Ladder to load specific inspection points.
+            </div>
           </div>
         </div>
+      </div>
 
-        <div class="form-group" style="margin-top: 8px;">
-          <label class="form-label">Ladder Type</label>
-          <div class="type-grid">
-            <label class="type-option">
-              <input type="radio" name="ladderType" value="extension">
-              <div class="type-card">
-                <span>🔄 Extension Ladder</span>
-              </div>
-            </label>
-            <label class="type-option">
-              <input type="radio" name="ladderType" value="step">
-              <div class="type-card">
-                <span>🪜 Step Ladder</span>
-              </div>
-            </label>
+      <!-- §4 Reference Images -->
+      <div class="section-block">
+        <div class="section-header">
+          <div class="section-label">
+            <div class="section-num">4</div>
+            <div>
+              <div class="section-title">Workbook Reference Images</div>
+              <div class="section-hint">Embedded safety references from source document</div>
+            </div>
           </div>
-          <span class="error-msg" id="err-ladderType"></span>
+          <span class="section-badge">3 refs</span>
         </div>
-      </section>
+        <div class="section-body">
+          <div class="ref-grid">
+            <figure class="ref-item">
+              <figcaption class="ref-caption">📄 Ladder work-at-height procedure</figcaption>
+              <img class="ref-img" src="assets/checklist/image3.png" alt="Workbook reference page for ladder operation control procedure" loading="lazy">
+            </figure>
+            <figure class="ref-item">
+              <figcaption class="ref-caption">📄 Extension ladder angle and stepladder guidance</figcaption>
+              <img class="ref-img" src="assets/checklist/image4.png" alt="Workbook reference page showing ladder angle, 3-point rule, 4 to 1 ratio, and stepladder guidance" loading="lazy">
+            </figure>
+            <figure class="ref-item">
+              <figcaption class="ref-caption">📄 Working-at-height reference</figcaption>
+              <img class="ref-img" src="assets/checklist/image5.png" alt="Workbook reference page for working at height requirements" loading="lazy">
+            </figure>
+          </div>
+        </div>
+      </div>
 
-      <!-- General Inspection Points -->
-      <section class="card" aria-labelledby="sec-general">
-        <div class="section-title-wrap">
-          <h2 id="sec-general" class="section-title">2. General Inspection (15 Points)</h2>
-          <span class="section-hint">Mandatory for all ladder types</span>
+      <!-- §5 Overall Remarks -->
+      <div class="section-block">
+        <div class="section-header">
+          <div class="section-label">
+            <div class="section-num">5</div>
+            <div>
+              <div class="section-title">Overall Remarks</div>
+              <div class="section-hint">General observations, maintenance recommendations (optional)</div>
+            </div>
+          </div>
         </div>
-        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px;">
-          Select PASS if compliant with safety specifications. Any defect must be marked as FAIL with mandatory remarks.
-        </p>
+        <div class="section-body">
+          <textarea id="overallRemarks" class="form-textarea" rows="3"
+            placeholder="e.g. Recommend re-tagging on next service cycle. No major structural defects observed."></textarea>
+        </div>
+      </div>
 
-        <div id="generalPointsContainer">
-          <!-- Populated by JS -->
-        </div>
-      </section>
-
-      <!-- Specific Type Points (Extension or Step) -->
-      <section class="card" id="specificSection" style="display: none;" aria-labelledby="sec-specific">
-        <div class="section-title-wrap">
-          <h2 id="sec-specific" class="section-title">3. Specific Inspection Points</h2>
-          <span class="section-hint" id="specificSectionHint">Type-specific requirements</span>
-        </div>
-        <div id="specificPointsContainer">
-          <!-- Populated dynamically -->
-        </div>
-      </section>
-
-      <!-- Reference Images from Workbook -->
-      <section class="card" aria-labelledby="sec-reference-images">
-        <div class="section-title-wrap">
-          <h2 id="sec-reference-images" class="section-title">4. Workbook Reference Images</h2>
-          <span class="section-hint">Embedded safety references</span>
-        </div>
-        <div class="reference-grid">
-          <figure class="reference-item">
-            <figcaption class="reference-caption">Ladder work-at-height procedure</figcaption>
-            <img class="reference-image" src="assets/checklist/image3.png" alt="Workbook reference page for ladder operation control procedure">
-          </figure>
-          <figure class="reference-item">
-            <figcaption class="reference-caption">Extension ladder angle and stepladder guidance</figcaption>
-            <img class="reference-image" src="assets/checklist/image4.png" alt="Workbook reference page showing ladder angle, 3-point rule, 4 to 1 ratio, and stepladder guidance">
-          </figure>
-          <figure class="reference-item">
-            <figcaption class="reference-caption">Working-at-height reference</figcaption>
-            <img class="reference-image" src="assets/checklist/image5.png" alt="Workbook reference page for working at height requirements">
-          </figure>
-        </div>
-      </section>
-
-      <!-- Overall Remarks Card -->
-      <section class="card" aria-labelledby="sec-remarks">
-        <div class="section-title-wrap">
-          <h2 id="sec-remarks" class="section-title">5. Overall Remarks (Optional)</h2>
-        </div>
-        <div class="form-group">
-          <textarea id="overallRemarks" class="form-textarea" rows="3" placeholder="Enter any general observations, maintenance schedule recommendations, or tag updates..."></textarea>
-        </div>
-      </section>
-
-      <!-- Validation banner -->
-      <div id="validationAlert" class="validation-alert">
-        Please complete all required fields and checklist decisions before submitting.
+      <!-- Validation Alert -->
+      <div id="validationAlert" class="val-alert" role="alert">
+        ⚠ <span id="validationAlertText">Please complete all required fields and checklist decisions before submitting.</span>
       </div>
 
     </form>
   </main>
 
-  <!-- Sticky Bottom Bar -->
+  <!-- ═══ BOTTOM BAR ════════════════════════════════════════════ -->
   <div class="bottom-bar">
     <div class="bottom-inner">
-      <div class="progress-box">
-        <div class="progress-bar-bg">
-          <div id="progressFill" class="progress-bar-fill"></div>
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div id="progressFill" class="progress-fill"></div>
         </div>
-        <span class="progress-circle-text" id="progressText">0 of 0 answered</span>
+        <div class="progress-text">
+          <span id="progressText">0 of 0 answered</span>
+          &nbsp;—&nbsp;<span class="progress-pct" id="progressPct">0%</span>
+        </div>
       </div>
-      <div>
-        <button type="submit" form="inspectionForm" id="submitBtn" class="btn-submit">
-          <span>✓</span> Save Inspection
-        </button>
-      </div>
+      <button type="submit" form="inspectionForm" id="submitBtn" class="btn-submit">
+        ✓ Save Inspection
+      </button>
     </div>
   </div>
 
-  <!-- Submission Result Modal -->
-  <div id="resultModal" class="modal-overlay">
+  <!-- ═══ RESULT MODAL ══════════════════════════════════════════ -->
+  <div id="resultModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
     <div class="modal-card">
-      <div id="resultBanner" class="result-banner pass">
-        <div id="resultIcon" class="result-icon">✓</div>
-        <h2 id="resultTitle" class="result-title">PASSED</h2>
-        <p id="resultSubtitle" class="result-subtitle">Ladder is safe for continued operational use</p>
+      <div id="resultBanner" class="modal-banner pass">
+        <span id="resultIcon" class="modal-result-icon">✓</span>
+        <div id="resultTitle" class="modal-result-title">INSPECTION PASSED</div>
+        <div id="resultSubtitle" class="modal-result-sub">Ladder is safe for continued operational use</div>
       </div>
       <div class="modal-body">
-        <table class="result-summary-table">
-          <tr>
-            <td>Inspection ID:</td>
-            <td id="resInspectionId" style="font-family: var(--font-mono); font-weight: 700;">-</td>
-          </tr>
-          <tr>
-            <td>Ladder No:</td>
-            <td id="resLadderNo">-</td>
-          </tr>
-          <tr>
-            <td>Type & Height:</td>
-            <td id="resTypeHeight">-</td>
-          </tr>
-          <tr>
-            <td>Inspector:</td>
-            <td id="resInspector">-</td>
-          </tr>
-          <tr>
-            <td>Date:</td>
-            <td id="resDate">-</td>
-          </tr>
-          <tr>
-            <td>Defects / Fails:</td>
-            <td id="resDefectCount">-</td>
-          </tr>
+        <table class="modal-table">
+          <tr><td>Inspection ID</td><td id="resInspectionId" style="font-family:var(--font-mono);">—</td></tr>
+          <tr><td>Ladder No.</td><td id="resLadderNo">—</td></tr>
+          <tr><td>Type &amp; Height</td><td id="resTypeHeight">—</td></tr>
+          <tr><td>Inspector</td><td id="resInspector">—</td></tr>
+          <tr><td>Date</td><td id="resDate">—</td></tr>
+          <tr><td>Defects / Fails</td><td id="resDefectCount">—</td></tr>
         </table>
-
-        <div id="failActionNotice" style="display:none; background:#fee2e2; border-left:4px solid #b91c1c; padding:10px 14px; font-size:0.85rem; color:#991b1b; font-weight:600; margin-bottom:18px; border-radius:4px;">
-          ⚠️ TAG OUT: Immediately attach a DO NOT USE tag and take this ladder out of service.
+        <div id="failActionNotice" class="tagout-notice">
+          ⚠️ TAG OUT: Immediately attach a DO NOT USE tag and remove this ladder from service until all defects are corrected and re-inspected.
         </div>
-
         <div class="modal-actions">
           <button type="button" class="btn-secondary" onclick="window.print()">🖨️ Print Report</button>
-          <button type="button" class="btn-primary-dark" id="btnNewInspection">Start New</button>
+          <button type="button" class="btn-primary" id="btnNewInspection">New Inspection →</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- History Drawer -->
-  <div id="historyDrawer" class="history-drawer">
-    <div class="drawer-header">
-      <h3 class="drawer-title">Inspection Records</h3>
-      <button type="button" class="drawer-close" id="closeHistoryBtn">&times;</button>
+  <!-- ═══ HISTORY DRAWER ════════════════════════════════════════ -->
+  <div id="historyDrawer" class="drawer" role="complementary" aria-label="Inspection records">
+    <div class="drawer-head">
+      <div class="drawer-head-title">📋 Inspection Records</div>
+      <button type="button" class="drawer-close" id="closeHistoryBtn" aria-label="Close">✕</button>
     </div>
-    <div class="drawer-content" id="historyList">
-      <!-- Records list -->
-    </div>
-    <div style="padding: 16px; border-top: 1px solid var(--border-subtle); display:flex; gap:10px;">
-      <button type="button" class="btn-secondary" id="exportCsvBtn" style="font-size:0.85rem;">📥 Export CSV</button>
-      <button type="button" class="btn-secondary" id="clearRecordsBtn" style="font-size:0.85rem; color:#b91c1c;">Clear</button>
+    <div class="drawer-body" id="historyList"></div>
+    <div class="drawer-foot">
+      <button type="button" class="btn-secondary" id="exportCsvBtn" style="font-size:0.8rem;">📥 Export CSV</button>
+      <button type="button" class="btn-secondary" id="clearRecordsBtn" style="font-size:0.8rem;color:var(--c-fail);">Clear All</button>
     </div>
   </div>
 
+  <!-- ═══ SCRIPT ════════════════════════════════════════════════ -->
   <script>
-    const SUPABASE_URL = 'https://jqamraigolylhtpvrjgm.supabase.co';
-    const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_OJ3iT9XQX7QYAJKE7Nxq0g_zVodgOiN';
+    'use strict';
 
-    async function submitInspectionToDatabase(payload) {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/submit_inspection`, {
+    const SUPABASE_URL = 'https://jqamraigolylhtpvrjgm.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_OJ3iT9XQX7QYAJKE7Nxq0g_zVodgOiN';
+
+    let CHECKLIST_DATA = { general: [], extension: [], step: [] };
+    let selectedType   = null;
+    let answers        = {};
+
+    /* ── Init date ── */
+    document.getElementById('inspectionDate').value = new Date().toISOString().split('T')[0];
+
+    /* ── Escape ── */
+    function esc(v) {
+      return String(v ?? '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+    }
+
+    /* ── UUID ── */
+    function newKey() {
+      if (window.crypto && typeof window.crypto.randomUUID === 'function') return crypto.randomUUID();
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random() * 16 | 0;
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+      });
+    }
+
+    /* ── Supabase helpers ── */
+    async function sbFetch(path) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
+      });
+      if (!r.ok) throw new Error((await r.text()) || 'Network error');
+      return r.json();
+    }
+
+    async function sbRpc(fn, payload) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
         method: 'POST',
         headers: {
-          apikey: SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`,
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ payload })
       });
-
-      const bodyText = await response.text();
-      const body = bodyText ? JSON.parse(bodyText) : null;
-
-      if (!response.ok) {
-        const message = body?.message || bodyText || 'The inspection could not be saved.';
-        throw new Error(message);
-      }
-
+      const text = await r.text();
+      const body = text ? JSON.parse(text) : null;
+      if (!r.ok) throw new Error(body?.message || text || 'Save failed');
       return body;
     }
 
-    function createSubmissionKey() {
-      if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-        return window.crypto.randomUUID();
-      }
-
-      return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c =>
-        (c ^ window.crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-      );
-    }
-
-    let CHECKLIST_DATA = { general: [], extension: [], step: [] };
-
-    // State
-    let selectedType = null;
-    let answers = {}; // { [id]: { result: 'PASS'|'FAIL'|'N/A', remarks: '' } }
-
-    // Init Date to today
-    document.getElementById('inspectionDate').value = new Date().toISOString().split('T')[0];
-
-    // Render Question Cards
+    /* ── Render question ── */
     function renderQuestion(item, container) {
-      const card = document.createElement('div');
-      card.className = 'question-card';
-      card.id = `qcard-${item.id}`;
-
-      card.innerHTML = `
-        <div class="question-header">
-          <span class="question-number">#${item.id}</span>
-          <span class="question-text">${item.text}</span>
-        </div>
-        <div class="decision-row">
-          <label class="decision-option pass">
-            <input type="radio" name="ans_${item.id}" value="PASS" onchange="onAnswerChange(${item.id}, 'PASS')">
-            <div class="decision-btn">✓ PASS</div>
-          </label>
-          <label class="decision-option fail">
-            <input type="radio" name="ans_${item.id}" value="FAIL" onchange="onAnswerChange(${item.id}, 'FAIL')">
-            <div class="decision-btn">✕ FAIL</div>
-          </label>
-          <label class="decision-option na">
-            <input type="radio" name="ans_${item.id}" value="N/A" onchange="onAnswerChange(${item.id}, 'N/A')">
-            <div class="decision-btn">— N/A</div>
-          </label>
-        </div>
-        <div class="fail-remarks-box" id="failBox_${item.id}" style="display: none;">
-          <label class="form-label" style="color:var(--fail-red);">* Describe Defect / Reason for Failure</label>
-          <textarea class="form-textarea" id="remark_${item.id}" rows="2" placeholder="e.g., Cracked weld on 2nd rung..." oninput="onRemarkChange(${item.id}, this.value)"></textarea>
-          <span class="error-msg" id="err-remark-${item.id}"></span>
-        </div>
-      `;
-      container.appendChild(card);
-    }
-
-    // Populate General Questions
-    const generalContainer = document.getElementById('generalPointsContainer');
-    CHECKLIST_DATA.general.forEach(q => renderQuestion(q, generalContainer));
-
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
-    }
-
-    function renderAnswerControl(item) {
-      if (['text', 'long_text', 'number', 'date'].includes(item.question_type)) {
-        if (item.question_type === 'long_text') {
-          return `<textarea class="form-textarea" rows="3" id="answer_${item.id}" oninput="onAnswerChange(${item.id}, this.value)"></textarea>`;
-        }
-        const inputType = item.question_type === 'number' ? 'number' : item.question_type === 'date' ? 'date' : 'text';
-        return `<input class="form-input" type="${inputType}" id="answer_${item.id}" oninput="onAnswerChange(${item.id}, this.value)">`;
-      }
-
-      const options = item.options && item.options.length ? item.options : [
+      const opts = (item.options && item.options.length) ? item.options : [
         { option_label: 'PASS', option_value: 'PASS', is_fail_value: false },
-        { option_label: 'FAIL', option_value: 'FAIL', is_fail_value: true },
-        { option_label: 'N/A', option_value: 'N/A', is_fail_value: false }
+        { option_label: 'FAIL', option_value: 'FAIL', is_fail_value: true  },
+        { option_label: 'N/A',  option_value: 'N/A',  is_fail_value: false }
       ];
 
-      return `
-        <div class="decision-row">
-          ${options.map(option => {
-            const visualClass = option.is_fail_value ? 'fail' : option.option_value === 'PASS' ? 'pass' : 'na';
-            return `
-              <label class="decision-option ${visualClass}">
-                <input type="radio" name="ans_${item.id}" value="${escapeHtml(option.option_value)}" onchange="onAnswerChange(${item.id}, this.value)">
-                <div class="decision-btn">${escapeHtml(option.option_label)}</div>
-              </label>
-            `;
-          }).join('')}
-        </div>
-      `;
-    }
+      const decHtml = opts.map(o => {
+        const cls  = o.is_fail_value ? 'fail' : o.option_value === 'PASS' ? 'pass' : 'na';
+        const icon = o.is_fail_value ? '✕'    : o.option_value === 'PASS' ? '✓'    : '—';
+        return `<label class="d-opt ${cls}">
+          <input type="radio" name="ans_${item.id}" value="${esc(o.option_value)}" onchange="onAnswerChange(${item.id}, this.value)">
+          <div class="d-btn">${icon} ${esc(o.option_label)}</div>
+        </label>`;
+      }).join('');
 
-    renderQuestion = function(item, container) {
       const card = document.createElement('div');
-      card.className = 'question-card';
+      card.className = 'q-card';
       card.id = `qcard-${item.id}`;
-
       card.innerHTML = `
-        <div class="question-header">
-          <span class="question-number">#${item.display_order || item.id}</span>
-          <span class="question-text">${escapeHtml(item.text)}${item.is_required ? ' *' : ''}</span>
+        <div class="q-meta">
+          <div class="q-status" id="qstatus-${item.id}">○</div>
+          <span class="q-num">#${item.display_order || item.id}</span>
+          <span class="q-text">${esc(item.question || item.text)}${item.is_required ? ' <span style="color:var(--c-accent)">*</span>' : ''}</span>
         </div>
-        ${renderAnswerControl(item)}
-        <div class="fail-remarks-box" id="failBox_${item.id}" style="display: none;">
-          <label class="form-label" style="color:var(--fail-red);">* Describe Defect / Reason for Failure</label>
-          <textarea class="form-textarea" id="remark_${item.id}" rows="2" placeholder="e.g., Cracked weld on 2nd rung..." oninput="onRemarkChange(${item.id}, this.value)"></textarea>
+        <div class="decision-row">${decHtml}</div>
+        <div class="fail-remarks" id="failBox_${item.id}" style="display:none;">
+          <div class="fail-remarks-label">⚠ Describe Defect / Reason for Failure (required)</div>
+          <textarea class="form-textarea" id="remark_${item.id}" rows="2"
+            placeholder="e.g. Cracked weld on 2nd rung from base…"
+            oninput="onRemarkChange(${item.id}, this.value)"></textarea>
           <span class="error-msg" id="err-remark-${item.id}"></span>
-        </div>
-      `;
+        </div>`;
       container.appendChild(card);
-    };
-
-    async function fetchSupabase(path) {
-      const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-        headers: {
-          apikey: SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
-        }
-      });
-      if (!response.ok) {
-        const text = await response.text();
-        throw new Error(text || 'Unable to load questionnaire data.');
-      }
-      return response.json();
     }
 
-    async function loadQuestionnaire() {
-      const [questions, options, docData] = await Promise.all([
-        fetchSupabase('inspection_points?select=id,category,question,question_type,display_order,is_required,allow_remarks&is_active=eq.true&order=display_order.asc'),
-        fetchSupabase('question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc'),
-        fetchSupabase('checklist_documents?select=title,doc_no,issued_date,revision,prepared_reviewed_by,approved_by,page_no,source_file&is_current=eq.true&order=id.desc&limit=1')
-      ]);
-
-      // Render document metadata dynamically
-      if (docData && docData.length > 0) {
-        const doc = docData[0];
-        const grid = document.getElementById('documentGrid');
-        const hint = document.getElementById('docSourceHint');
-        if (hint) hint.textContent = doc.source_file ? `Source: ${doc.source_file}` : 'Active document';
-
-        // Update header bar
-        const issuedStr = doc.issued_date
-          ? new Date(doc.issued_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
-          : '—';
-        const el = id => document.getElementById(id);
-        if (el('hdrDocNo'))    el('hdrDocNo').textContent    = doc.doc_no || '—';
-        if (el('hdrRevision')) el('hdrRevision').textContent = doc.revision || '—';
-        if (el('hdrIssued'))   el('hdrIssued').textContent   = issuedStr;
-
-        if (grid) {
-          const fields = [
-            ['Title', doc.title],
-            ['Document No.', doc.doc_no],
-            ['Issued Date', issuedStr],
-            ['Revision No. / Date', doc.revision || '—'],
-            ['Prepared & Reviewed By', doc.prepared_reviewed_by || '—'],
-            ['Approved By', doc.approved_by || '—'],
-            ['Page No.', doc.page_no || '—'],
-          ];
-          grid.innerHTML = fields.map(([label, value]) => `
-            <div class="document-field">
-              <span class="document-label">${escapeHtml(label)}</span>
-              <span class="document-value">${escapeHtml(String(value))}</span>
-            </div>
-          `).join('');
-        }
-      }
-
-      const optionsByQuestion = options.reduce((map, option) => {
-        if (!map[option.question_id]) map[option.question_id] = [];
-        map[option.question_id].push(option);
-        return map;
-      }, {});
-
-      CHECKLIST_DATA = { general: [], extension: [], step: [] };
-      questions.forEach(question => {
-        const item = {
-          ...question,
-          text: question.question,
-          options: optionsByQuestion[question.id] || []
-        };
-        if (!CHECKLIST_DATA[item.category]) CHECKLIST_DATA[item.category] = [];
-        CHECKLIST_DATA[item.category].push(item);
-      });
-
-      generalContainer.innerHTML = '';
-      CHECKLIST_DATA.general.forEach(q => renderQuestion(q, generalContainer));
-      updateProgress();
-    }
-
-    function findQuestionById(id) {
-      return getActiveQuestions().find(q => Number(q.id) === Number(id));
-    }
-
-    function isFailAnswer(question, answer) {
-      if (!question || !answer) return false;
-      const option = (question.options || []).find(o => o.option_value === answer.result);
-      return answer.result === 'FAIL' || option?.is_fail_value === true;
-    }
-
-    // Ladder Type Change
-    document.querySelectorAll('input[name="ladderType"]').forEach(r => {
-      r.addEventListener('change', (e) => {
-        selectedType = e.target.value;
-        const specificSection = document.getElementById('specificSection');
-        const specificContainer = document.getElementById('specificPointsContainer');
-        const specificTitle = document.getElementById('sec-specific');
-        const specificHint = document.getElementById('specificSectionHint');
-
-        specificContainer.innerHTML = '';
-        specificSection.style.display = 'block';
-
-        if (selectedType === 'extension') {
-          specificTitle.textContent = `3. Extension Ladder Specific Points (${CHECKLIST_DATA.extension.length} Points)`;
-          specificHint.textContent = 'Locks, pulleys, ropes and sliding mechanism';
-          CHECKLIST_DATA.extension.forEach(q => renderQuestion(q, specificContainer));
-        } else if (selectedType === 'step') {
-          specificTitle.textContent = `3. Step Ladder Specific Points (${CHECKLIST_DATA.step.length} Points)`;
-          specificHint.textContent = 'Height limits, hinges and spreader locks';
-          CHECKLIST_DATA.step.forEach(q => renderQuestion(q, specificContainer));
-        }
-
-        updateProgress();
-      });
-    });
-
-    // Answer change handler
+    /* ── Answer change ── */
     window.onAnswerChange = function(id, val) {
-      if (!answers[id]) answers[id] = { result: val, remarks: '' };
-      else answers[id].result = val;
+      answers[id] = answers[id] || { result: null, remarks: '' };
+      answers[id].result = val;
 
-      const question = findQuestionById(id);
-      const card = document.getElementById(`qcard-${id}`);
-      card.classList.remove('answered-pass', 'answered-fail', 'answered-na');
-      const failBox = document.getElementById(`failBox_${id}`);
+      const q    = findQuestion(id);
+      const card = document.getElementById('qcard-' + id);
+      const stat = document.getElementById('qstatus-' + id);
+      const box  = document.getElementById('failBox_' + id);
 
-      if (isFailAnswer(question, answers[id])) {
-        card.classList.add('answered-fail');
-        failBox.style.display = 'block';
+      card.classList.remove('is-pass','is-fail','is-na','needs-answer');
+      card.style.removeProperty('border-color');
+
+      const isFail = isFailAnswer(q, answers[id]);
+
+      if (isFail) {
+        card.classList.add('is-fail'); stat.textContent = '✕'; box.style.display = 'block';
       } else if (val === 'PASS') {
-        card.classList.add('answered-pass');
-        failBox.style.display = 'none';
+        card.classList.add('is-pass'); stat.textContent = '✓'; box.style.display = 'none';
       } else {
-        card.classList.add('answered-na');
-        failBox.style.display = 'none';
+        card.classList.add('is-na');   stat.textContent = '—'; box.style.display = 'none';
       }
-
       updateProgress();
     };
 
     window.onRemarkChange = function(id, text) {
-      if (!answers[id]) answers[id] = { result: 'FAIL', remarks: text };
-      else answers[id].remarks = text;
-      document.getElementById(`err-remark-${id}`).textContent = '';
+      answers[id] = answers[id] || { result: 'FAIL', remarks: '' };
+      answers[id].remarks = text;
+      document.getElementById('err-remark-' + id).textContent = '';
     };
 
-    // Calculate progress
+    /* ── Helpers ── */
     function getActiveQuestions() {
       const list = [...CHECKLIST_DATA.general];
-      if (selectedType && CHECKLIST_DATA[selectedType]) {
-        list.push(...CHECKLIST_DATA[selectedType]);
-      }
+      if (selectedType && CHECKLIST_DATA[selectedType]) list.push(...CHECKLIST_DATA[selectedType]);
       return list;
+    }
+
+    function findQuestion(id) {
+      return getActiveQuestions().find(q => Number(q.id) === Number(id));
+    }
+
+    function isFailAnswer(q, ans) {
+      if (!q || !ans || !ans.result) return false;
+      const opt = (q.options || []).find(o => o.option_value === ans.result);
+      return ans.result === 'FAIL' || (opt && opt.is_fail_value === true);
     }
 
     function updateProgress() {
       const active = getActiveQuestions();
-      const total = active.length;
-      let answeredCount = 0;
+      const total  = active.length;
+      const done   = active.filter(q => answers[q.id] && answers[q.id].result).length;
+      const pct    = total ? Math.round((done / total) * 100) : 0;
 
-      active.forEach(q => {
-        if (answers[q.id] && answers[q.id].result) {
-          answeredCount++;
-        }
-      });
-
-      const pct = Math.round((answeredCount / total) * 100);
-      document.getElementById('progressFill').style.width = `${pct}%`;
-      document.getElementById('progressText').textContent = `${answeredCount} of ${total} answered`;
+      document.getElementById('progressFill').style.width = pct + '%';
+      document.getElementById('progressText').textContent = done + ' of ' + total + ' answered';
+      document.getElementById('progressPct').textContent  = pct + '%';
     }
 
-    // Validation & Submit
-    document.getElementById('inspectionForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      let hasError = false;
+    /* ── Ladder type change ── */
+    document.querySelectorAll('input[name="ladderType"]').forEach(function(r) {
+      r.addEventListener('change', function(e) {
+        selectedType = e.target.value;
+        var sec = document.getElementById('specificSection');
+        var con = document.getElementById('specificPointsContainer');
+        var ttl = document.getElementById('sec-specific');
+        var hnt = document.getElementById('specificSectionHint');
+        var bdg = document.getElementById('specificBadge');
 
-      // Validate Header fields
-      const inspector = document.getElementById('inspectorName');
-      const date = document.getElementById('inspectionDate');
-      const ladderNo = document.getElementById('ladderNo');
-      const section = document.getElementById('ladderSection');
-      const height = document.getElementById('heightFeet');
-      const alertBox = document.getElementById('validationAlert');
-      const submitBtn = document.getElementById('submitBtn');
+        con.innerHTML = '';
+        sec.style.display = 'block';
 
-      // Clear errors
-      alertBox.textContent = 'Please complete all required fields and checklist decisions before submitting.';
-      document.querySelectorAll('.error-msg').forEach(el => el.textContent = '');
-      document.querySelectorAll('.form-input').forEach(el => el.classList.remove('is-invalid'));
+        if (selectedType === 'extension') {
+          ttl.textContent = 'Extension Ladder — Specific Points';
+          hnt.textContent = 'Locks, pulleys, ropes and sliding mechanism';
+          bdg.textContent = CHECKLIST_DATA.extension.length + ' pts';
+          CHECKLIST_DATA.extension.forEach(function(q) { renderQuestion(q, con); });
+        } else {
+          ttl.textContent = 'Step Ladder — Specific Points';
+          hnt.textContent = 'Height limits, hinges and spreader locks';
+          bdg.textContent = CHECKLIST_DATA.step.length + ' pts';
+          CHECKLIST_DATA.step.forEach(function(q) { renderQuestion(q, con); });
+        }
 
-      if (!inspector.value.trim()) {
-        document.getElementById('err-inspectorName').textContent = 'Please enter inspector name.';
-        inspector.classList.add('is-invalid');
+        document.getElementById('err-ladderType').textContent = '';
+        updateProgress();
+      });
+    });
+
+    /* ── Load questionnaire ── */
+    async function loadQuestionnaire() {
+      const [questions, options, docData] = await Promise.all([
+        sbFetch('inspection_points?select=id,category,question,question_type,display_order,is_required,allow_remarks&is_active=eq.true&order=display_order.asc'),
+        sbFetch('question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc'),
+        sbFetch('checklist_documents?select=title,doc_no,issued_date,revision,prepared_reviewed_by,approved_by,page_no,source_file&is_current=eq.true&order=id.desc&limit=1')
+      ]);
+
+      /* Document metadata */
+      const grid = document.getElementById('documentGrid');
+      if (docData && docData.length) {
+        const doc = docData[0];
+        const issuedStr = doc.issued_date
+          ? new Date(doc.issued_date).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })
+          : '—';
+
+        const el = function(id) { return document.getElementById(id); };
+        if (el('hdrDocNo'))    el('hdrDocNo').textContent    = doc.doc_no  || '—';
+        if (el('hdrRevision')) el('hdrRevision').textContent = doc.revision || '—';
+        if (el('hdrIssued'))   el('hdrIssued').textContent   = issuedStr;
+
+        const hint = document.getElementById('docSourceHint');
+        if (hint) hint.textContent = doc.source_file ? 'Source: ' + doc.source_file : 'Active Document';
+
+        const fields = [
+          ['Title',                  doc.title],
+          ['Document No.',           doc.doc_no],
+          ['Issued Date',            issuedStr],
+          ['Revision',               doc.revision || '—'],
+          ['Prepared & Reviewed By', doc.prepared_reviewed_by || '—'],
+          ['Approved By',            doc.approved_by || '—'],
+          ['Page No.',               doc.page_no || '—'],
+        ];
+        if (grid) {
+          grid.innerHTML = fields.map(function(pair) {
+            return '<div class="doc-cell"><div class="doc-cell-label">' + esc(pair[0]) + '</div><div class="doc-cell-value">' + esc(String(pair[1])) + '</div></div>';
+          }).join('');
+        }
+      } else {
+        if (grid) grid.innerHTML = '<div class="doc-cell" style="grid-column:1/-1;color:var(--c-text-2);font-size:0.82rem;">Document metadata unavailable.</div>';
+      }
+
+      /* Map options */
+      const optsByQ = options.reduce(function(m, o) {
+        if (!m[o.question_id]) m[o.question_id] = [];
+        m[o.question_id].push(o);
+        return m;
+      }, {});
+
+      CHECKLIST_DATA = { general: [], extension: [], step: [] };
+      questions.forEach(function(q) {
+        var item = Object.assign({}, q, { text: q.question, options: optsByQ[q.id] || [] });
+        if (!CHECKLIST_DATA[item.category]) CHECKLIST_DATA[item.category] = [];
+        CHECKLIST_DATA[item.category].push(item);
+      });
+
+      var gc = document.getElementById('generalPointsContainer');
+      gc.innerHTML = '';
+      CHECKLIST_DATA.general.forEach(function(q) { renderQuestion(q, gc); });
+
+      var gb = document.getElementById('generalBadge');
+      if (gb) gb.textContent = CHECKLIST_DATA.general.length + ' pts';
+
+      updateProgress();
+      
+    }
+
+    /* ── Validate ── */
+    function validate() {
+      var hasError = false, firstErrEl = null;
+
+      function setErr(elId, msg, inputId) {
+        document.getElementById(elId).textContent = msg;
+        if (inputId) {
+          var el = document.getElementById(inputId);
+          if (el) { el.classList.add('is-invalid'); if (!firstErrEl) firstErrEl = el; }
+        } else if (!firstErrEl) {
+          firstErrEl = document.getElementById(elId);
+        }
         hasError = true;
       }
-      if (!date.value) {
-        document.getElementById('err-inspectionDate').textContent = 'Date is required.';
-        date.classList.add('is-invalid');
-        hasError = true;
-      }
-      if (!ladderNo.value.trim()) {
-        document.getElementById('err-ladderNo').textContent = 'Ladder number is required.';
-        ladderNo.classList.add('is-invalid');
-        hasError = true;
-      }
-      if (!section.value.trim()) {
-        document.getElementById('err-ladderSection').textContent = 'Section / location is required.';
-        section.classList.add('is-invalid');
-        hasError = true;
-      }
-      if (!height.value || Number(height.value) <= 0) {
-        document.getElementById('err-heightFeet').textContent = 'Valid height in feet is required.';
-        height.classList.add('is-invalid');
-        hasError = true;
-      }
+
+      document.querySelectorAll('.error-msg').forEach(function(el) { el.textContent = ''; });
+      document.querySelectorAll('.form-input').forEach(function(el) { el.classList.remove('is-invalid'); });
+      document.querySelectorAll('.q-card').forEach(function(c) { c.classList.remove('needs-answer'); c.style.removeProperty('border-color'); });
+
+      var inspector = document.getElementById('inspectorName');
+      var date      = document.getElementById('inspectionDate');
+      var ladderNo  = document.getElementById('ladderNo');
+      var section   = document.getElementById('ladderSection');
+      var height    = document.getElementById('heightFeet');
+
+      if (!inspector.value.trim()) setErr('err-inspectorName', 'Inspector name is required.',        'inspectorName');
+      if (!date.value)             setErr('err-inspectionDate','Inspection date is required.',        'inspectionDate');
+      if (!ladderNo.value.trim())  setErr('err-ladderNo',      'Ladder number is required.',          'ladderNo');
+      if (!section.value.trim())   setErr('err-ladderSection', 'Section / location is required.',     'ladderSection');
+      if (!height.value || Number(height.value) <= 0) setErr('err-heightFeet', 'Valid height in feet is required.', 'heightFeet');
       if (!selectedType) {
-        document.getElementById('err-ladderType').textContent = 'Please select either Extension or Step ladder.';
-        hasError = true;
+        setErr('err-ladderType', 'Select a ladder type — Extension or Step.');
+        if (!firstErrEl) firstErrEl = document.querySelector('.type-grid');
       }
 
-      // Check all active questions
-      const active = getActiveQuestions();
-      for (const q of active) {
-        const ans = answers[q.id];
-        if (q.is_required && (!ans || !ans.result)) {
+      var active = getActiveQuestions();
+      for (var i = 0; i < active.length; i++) {
+        var q   = active[i];
+        var ans = answers[q.id];
+        var hasVal = ans && ans.result != null && String(ans.result).trim() !== '';
+        if (q.is_required && !hasVal) {
           hasError = true;
-          const card = document.getElementById(`qcard-${q.id}`);
-          card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          card.style.borderColor = 'var(--fail-red)';
-          break;
-        }
-        if (!ans || !ans.result) continue;
-        if (isFailAnswer(q, ans) && (!ans.remarks || !ans.remarks.trim())) {
+          var card = document.getElementById('qcard-' + q.id);
+          if (card) { card.classList.add('needs-answer'); if (!firstErrEl) firstErrEl = card; }
+        } else if (hasVal && isFailAnswer(q, ans) && !(ans.remarks && ans.remarks.trim())) {
           hasError = true;
-          document.getElementById(`err-remark-${q.id}`).textContent = 'Reason is mandatory when marking FAIL.';
-          document.getElementById(`remark_${q.id}`).focus();
-          break;
+          document.getElementById('err-remark-' + q.id).textContent = 'A remark is mandatory when marking FAIL.';
+          var ri = document.getElementById('remark_' + q.id);
+          if (!firstErrEl && ri) firstErrEl = ri;
         }
       }
 
-      if (hasError) {
+      return { hasError: hasError, firstErrEl: firstErrEl };
+    }
+
+    /* ── Submit ── */
+    document.getElementById('inspectionForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var alertBox  = document.getElementById('validationAlert');
+      var alertText = document.getElementById('validationAlertText');
+      var submitBtn = document.getElementById('submitBtn');
+
+      alertBox.classList.remove('active');
+      var v = validate();
+
+      if (v.hasError) {
+        alertText.textContent = 'Please resolve all highlighted fields before saving.';
         alertBox.classList.add('active');
-        alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var target = v.firstErrEl || alertBox;
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (target.focus) target.focus({ preventScroll: true });
         return;
       }
 
-      alertBox.classList.remove('active');
+      var active = getActiveQuestions();
+      var failCount = 0;
+      active.forEach(function(q) { if (isFailAnswer(q, answers[q.id])) failCount++; });
 
-      // Compute Overall Result
-      let failCount = 0;
-      active.forEach(q => {
-        if (isFailAnswer(q, answers[q.id])) failCount++;
-      });
-      const overallResult = failCount > 0 ? 'FAIL' : 'PASS';
-      const submissionKey = createSubmissionKey();
-      const overallRemarks = document.getElementById('overallRemarks').value.trim();
+      var submissionKey  = newKey();
+      var overallResult  = failCount > 0 ? 'FAIL' : 'PASS';
+      var overallRemarks = document.getElementById('overallRemarks').value.trim();
+      var inspector      = document.getElementById('inspectorName').value.trim();
+      var date           = document.getElementById('inspectionDate').value;
+      var ladderNo       = document.getElementById('ladderNo').value.trim();
+      var section        = document.getElementById('ladderSection').value.trim();
+      var height         = document.getElementById('heightFeet').value;
 
-      const payload = {
-        submission_key: submissionKey,
-        inspector_name: inspector.value.trim(),
-        inspection_date: date.value,
-        ladder_no: ladderNo.value.trim(),
-        section: section.value.trim(),
-        height_feet: Number(height.value),
-        ladder_type: selectedType,
-        remarks: overallRemarks,
-        results: active.filter(q => answers[q.id]?.result).map(q => ({
-          point_id: q.id,
-          result: answers[q.id].result,
-          remarks: answers[q.id].remarks || ''
-        }))
+      var payload = {
+        submission_key:  submissionKey,
+        inspector_name:  inspector,
+        inspection_date: date,
+        ladder_no:       ladderNo,
+        section:         section,
+        height_feet:     Number(height),
+        ladder_type:     selectedType,
+        remarks:         overallRemarks,
+        results: active
+          .filter(function(q) { return answers[q.id] && answers[q.id].result; })
+          .map(function(q) { return { point_id: q.id, result: answers[q.id].result, remarks: answers[q.id].remarks || '' }; })
       };
 
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span>...</span> Saving';
+      submitBtn.textContent = '… Saving';
 
       try {
-        const saved = await submitInspectionToDatabase(payload);
+        var saved = await sbRpc('submit_inspection', payload);
 
-        // Create local display/history record after the database save succeeds.
-        const record = {
-          id: saved?.id || submissionKey,
-          submissionKey,
-          timestamp: new Date().toISOString(),
-          inspector: inspector.value.trim(),
-          date: date.value,
-          ladderNo: ladderNo.value.trim(),
-          section: section.value.trim(),
-          height: height.value,
-          type: selectedType,
-          overallResult: saved?.overall_result || overallResult,
-          failCount,
-          remarks: overallRemarks,
-          answers: { ...answers },
+        var record = {
+          id:              saved && saved.id ? saved.id : submissionKey,
+          submissionKey:   submissionKey,
+          timestamp:       new Date().toISOString(),
+          inspector:       inspector,
+          date:            date,
+          ladderNo:        ladderNo,
+          section:         section,
+          height:          height,
+          type:            selectedType,
+          overallResult:   (saved && saved.overall_result) ? saved.overall_result : overallResult,
+          failCount:       failCount,
+          remarks:         overallRemarks,
           savedToDatabase: true
         };
 
         saveRecord(record);
         showResultModal(record);
-      } catch (error) {
-        alertBox.textContent = `Database save failed: ${error.message}`;
+      } catch(err) {
+        alertText.textContent = 'Save failed: ' + err.message;
         alertBox.classList.add('active');
         alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
       } finally {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = '<span>✓</span> Save Inspection';
+        submitBtn.textContent = '✓ Save Inspection';
       }
     });
 
-    // Storage and Records
-    function getStoredRecords() {
-      try {
-        return JSON.parse(localStorage.getItem('ladder_inspections') || '[]');
-      } catch (e) {
-        return [];
-      }
-    }
-
-    function saveRecord(rec) {
-      const records = getStoredRecords();
-      records.unshift(rec);
-      localStorage.setItem('ladder_inspections', JSON.stringify(records));
-      updateRecordCount();
-    }
-
-    function updateRecordCount() {
-      const records = getStoredRecords();
-      document.getElementById('recordCount').textContent = records.length;
-    }
-
-    // Modal Display
+    /* ── Result modal ── */
     function showResultModal(rec) {
-      const modal = document.getElementById('resultModal');
-      const banner = document.getElementById('resultBanner');
-      const icon = document.getElementById('resultIcon');
-      const title = document.getElementById('resultTitle');
-      const sub = document.getElementById('resultSubtitle');
-      const notice = document.getElementById('failActionNotice');
-
-      if (rec.overallResult === 'PASS') {
-        banner.className = 'result-banner pass';
-        icon.textContent = '✓';
-        title.textContent = 'INSPECTION PASSED';
-        sub.textContent = 'All safety inspection requirements verified successfully';
-        notice.style.display = 'none';
-      } else {
-        banner.className = 'result-banner fail';
-        icon.textContent = '✕';
-        title.textContent = 'INSPECTION FAILED';
-        sub.textContent = `${rec.failCount} safety defect(s) detected during checklist review`;
-        notice.style.display = 'block';
-      }
-
+      var pass = rec.overallResult === 'PASS';
+      document.getElementById('resultBanner').className   = 'modal-banner ' + (pass ? 'pass' : 'fail');
+      document.getElementById('resultIcon').textContent   = pass ? '✓' : '✕';
+      document.getElementById('resultTitle').textContent  = pass ? 'INSPECTION PASSED' : 'INSPECTION FAILED';
+      document.getElementById('resultSubtitle').textContent = pass
+        ? 'All safety inspection requirements verified successfully.'
+        : rec.failCount + ' safety defect(s) detected — action required.';
+      document.getElementById('failActionNotice').style.display = pass ? 'none' : 'block';
       document.getElementById('resInspectionId').textContent = rec.id;
-      document.getElementById('resLadderNo').textContent = rec.ladderNo;
-      document.getElementById('resTypeHeight').textContent = `${rec.type.toUpperCase()} · ${rec.height} ft`;
-      document.getElementById('resInspector').textContent = rec.inspector;
-      document.getElementById('resDate').textContent = rec.date;
-      document.getElementById('resDefectCount').textContent = rec.failCount > 0 ? `${rec.failCount} Defect(s)` : 'None';
-
-      modal.classList.add('active');
+      document.getElementById('resLadderNo').textContent     = rec.ladderNo;
+      document.getElementById('resTypeHeight').textContent   = (rec.type ? rec.type.toUpperCase() : '') + ' · ' + rec.height + ' ft';
+      document.getElementById('resInspector').textContent    = rec.inspector;
+      document.getElementById('resDate').textContent         = rec.date;
+      document.getElementById('resDefectCount').textContent  = rec.failCount > 0 ? rec.failCount + ' defect(s)' : 'None';
+      document.getElementById('resultModal').classList.add('active');
     }
 
-    document.getElementById('btnNewInspection').addEventListener('click', () => {
+    /* ── New inspection ── */
+    document.getElementById('btnNewInspection').addEventListener('click', function() {
       document.getElementById('resultModal').classList.remove('active');
       document.getElementById('inspectionForm').reset();
       document.getElementById('inspectionDate').value = new Date().toISOString().split('T')[0];
-      answers = {};
+      answers      = {};
       selectedType = null;
       document.getElementById('specificSection').style.display = 'none';
       document.getElementById('specificPointsContainer').innerHTML = '';
-      document.querySelectorAll('.question-card').forEach(c => {
-        c.classList.remove('answered-pass', 'answered-fail', 'answered-na');
-        c.style.borderColor = 'var(--border-subtle)';
+      document.querySelectorAll('.q-card').forEach(function(c) {
+        c.classList.remove('is-pass','is-fail','is-na','needs-answer');
+        c.style.removeProperty('border-color');
       });
-      document.querySelectorAll('.fail-remarks-box').forEach(b => b.style.display = 'none');
+      document.querySelectorAll('.fail-remarks').forEach(function(b) { b.style.display = 'none'; });
+      document.querySelectorAll('.q-status').forEach(function(s) { s.textContent = '○'; });
+      document.getElementById('validationAlert').classList.remove('active');
       updateProgress();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // History Drawer handlers
-    const historyDrawer = document.getElementById('historyDrawer');
-    document.getElementById('openHistoryBtn').addEventListener('click', () => {
-      renderHistoryList();
-      historyDrawer.classList.add('open');
-    });
-    document.getElementById('closeHistoryBtn').addEventListener('click', () => {
-      historyDrawer.classList.remove('open');
-    });
-
-    function renderHistoryList() {
-      const records = getStoredRecords();
-      const listEl = document.getElementById('historyList');
-      if (records.length === 0) {
-        listEl.innerHTML = '<p style="color:#64748b; font-size:0.9rem; text-align:center; padding:24px 0;">No saved inspections yet.</p>';
-        return;
-      }
-      listEl.innerHTML = records.map(r => `
-        <div class="history-item">
-          <div class="history-item-top">
-            <span>Ladder #${r.ladderNo} (${r.type})</span>
-            <span class="${r.overallResult === 'PASS' ? 'badge-pass' : 'badge-fail'}">${r.overallResult}</span>
-          </div>
-          <div style="color:#64748b;">${r.date} · Inspector: ${r.inspector} · Ref: ${r.id}</div>
-        </div>
-      `).join('');
+    /* ── Storage ── */
+    function getStoredRecords() {
+      try { return JSON.parse(localStorage.getItem('ladder_inspections') || '[]'); }
+      catch(e) { return []; }
     }
 
-    document.getElementById('exportCsvBtn').addEventListener('click', () => {
-      const records = getStoredRecords();
-      if (!records.length) return alert('No records to export');
-      const rows = [
-        ['ID', 'Date', 'Ladder No', 'Type', 'Height (ft)', 'Inspector', 'Result', 'Defects', 'Overall Remarks']
-      ];
-      records.forEach(r => {
-        rows.push([
-          r.id, r.date, `"${r.ladderNo}"`, r.type, r.height, `"${r.inspector}"`, r.overallResult, r.failCount, `"${(r.remarks||'').replace(/"/g, '""')}"`
-        ]);
-      });
-      const csvContent = 'data:text/csv;charset=utf-8,' + rows.map(e => e.join(',')).join('\n');
-      const encodedUri = encodeURI(csvContent);
-      const link = document.createElement('a');
-      link.setAttribute('href', encodedUri);
-      link.setAttribute('download', `ladder_inspections_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    });
+    function saveRecord(rec) {
+      var all = getStoredRecords();
+      all.unshift(rec);
+      localStorage.setItem('ladder_inspections', JSON.stringify(all));
+      
+    }
 
-    document.getElementById('clearRecordsBtn').addEventListener('click', () => {
-      if (confirm('Clear all saved local inspection records?')) {
-        localStorage.removeItem('ladder_inspections');
-        updateRecordCount();
-        renderHistoryList();
+    /* ── Theme Toggle ── */
+    var themeToggleBtn = document.getElementById('themeToggleBtn');
+    var themeIcon = document.getElementById('themeIcon');
+    
+    function updateThemeIcon() {
+      if (document.documentElement.getAttribute('data-theme') === 'light') {
+        themeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>';
+      } else {
+        themeIcon.innerHTML = '<path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>';
       }
+    }
+    updateThemeIcon();
+
+    themeToggleBtn.addEventListener('click', function() {
+      var current = document.documentElement.getAttribute('data-theme');
+      if (current === 'light') {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.setItem('theme', 'dark');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+      }
+      updateThemeIcon();
     });
 
-    updateRecordCount();
-    loadQuestionnaire().catch(error => {
-      const alertBox = document.getElementById('validationAlert');
-      alertBox.textContent = `Questionnaire could not be loaded: ${error.message}`;
+    /* ── Boot ── */
+    
+    loadQuestionnaire().catch(function(err) {
+      var alertText = document.getElementById('validationAlertText');
+      var alertBox  = document.getElementById('validationAlert');
+      alertText.textContent = 'Questionnaire could not be loaded: ' + err.message;
       alertBox.classList.add('active');
       document.getElementById('submitBtn').disabled = true;
+
+      var grid = document.getElementById('documentGrid');
+      if (grid) grid.innerHTML = '<div class="doc-cell" style="grid-column:1/-1;color:var(--c-fail);font-size:0.82rem;">Failed to connect to database.</div>';
+      var hint = document.getElementById('docSourceHint');
+      if (hint) { hint.textContent = 'Offline'; hint.style.color = 'var(--c-fail)'; }
     });
   </script>
 </body>
