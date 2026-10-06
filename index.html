@@ -701,6 +701,24 @@
   </div>
 
   <!-- ═══ RESULT MODAL ══════════════════════════════════════════ -->
+  
+  <!-- ═══ ERROR MODAL ══════════════════════════════════════════ -->
+  <div id="errorModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="errorTitle" style="z-index: 9999;">
+    <div class="modal-card">
+      <div class="modal-banner fail">
+        <span class="modal-result-icon">⚠️</span>
+        <div>
+          <h2 id="errorTitle" class="modal-title">Error</h2>
+          <div class="modal-subtitle">Something went wrong</div>
+        </div>
+      </div>
+      <div class="modal-body" style="text-align: center; padding: 40px 20px;">
+        <p id="errorModalText" style="font-size: 1rem; color: var(--c-text); margin-bottom: 30px; line-height: 1.6;"></p>
+        <button type="button" class="btn-primary" onclick="document.getElementById('errorModal').classList.remove('active')">Dismiss</button>
+      </div>
+    </div>
+  </div>
+
   <div id="resultModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="resultTitle">
     <div class="modal-card">
       <div id="resultBanner" class="modal-banner pass">
@@ -1014,8 +1032,7 @@
       var v = validate();
 
       if (v.hasError) {
-        alertText.textContent = 'Please resolve all highlighted fields before saving.';
-        alertBox.classList.add('active');
+        showErrorModal('Please resolve all highlighted fields before saving.');
         var target = v.firstErrEl || alertBox;
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         if (target.focus) target.focus({ preventScroll: true });
@@ -1075,9 +1092,7 @@
 
         showResultModal(record);
       } catch(err) {
-        alertText.textContent = 'Save failed: ' + err.message;
-        alertBox.classList.add('active');
-        alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        showErrorModal('Save failed: ' + err.message);
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '✓ Save Inspection';
@@ -1085,6 +1100,12 @@
     });
 
     /* ── Result modal ── */
+    
+    function showErrorModal(msg) {
+      document.getElementById('errorModalText').textContent = msg;
+      document.getElementById('errorModal').classList.add('active');
+    }
+
     function showResultModal(rec) {
       var pass = rec.overallResult === 'PASS';
       document.getElementById('resultBanner').className   = 'modal-banner ' + (pass ? 'pass' : 'fail');
@@ -1154,8 +1175,7 @@
     loadQuestionnaire().catch(function(err) {
       var alertText = document.getElementById('validationAlertText');
       var alertBox  = document.getElementById('validationAlert');
-      alertText.textContent = 'Questionnaire could not be loaded: ' + err.message;
-      alertBox.classList.add('active');
+      showErrorModal('Questionnaire could not be loaded: ' + err.message);
       document.getElementById('submitBtn').disabled = true;
     });
   </script>
