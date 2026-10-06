@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -37,10 +37,6 @@
       --c-fail:        #ef4444;
       --c-fail-bg:     rgba(239,68,68,0.10);
       --c-fail-border: rgba(239,68,68,0.30);
-
-      --c-na:          #64748b;
-      --c-na-bg:       rgba(100,116,139,0.10);
-      --c-na-border:   rgba(100,116,139,0.30);
 
       --r-sm:  6px;
       --r-md:  10px;
@@ -78,13 +74,10 @@
       --c-fail:        #dc2626;
       --c-fail-bg:     rgba(220,38,38,0.10);
       --c-fail-border: rgba(220,38,38,0.30);
-
-      --c-na:          #64748b;
-      --c-na-bg:       rgba(100,116,139,0.10);
-      --c-na-border:   rgba(100,116,139,0.30);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
     html { scroll-behavior: smooth; }
 
     body {
@@ -93,7 +86,8 @@
       color: var(--c-text);
       line-height: 1.55;
       -webkit-font-smoothing: antialiased;
-      padding-bottom: 88px;
+      padding-bottom: 100px;
+      padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
     }
 
     /* ─── Header ─────────────────────────────────────────────── */
@@ -201,7 +195,7 @@
     /* ─── Form Elements ──────────────────────────────────────── */
     .form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
     .form-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    @media (max-width: 600px) { .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; } }
+
 
     .form-row { margin-bottom: 14px; }
 
@@ -215,7 +209,7 @@
       width: 100%; background: var(--c-surface-2); border: 1.5px solid var(--c-border);
       border-radius: var(--r-sm); color: var(--c-text); font-family: var(--font-main);
       font-size: 0.9rem; padding: 10px 14px; outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s; -webkit-appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s; -webkit-appearance: none; appearance: none;
     }
     .form-input:focus, .form-textarea:focus {
       border-color: var(--c-accent); box-shadow: 0 0 0 3px var(--c-accent-dim);
@@ -259,7 +253,6 @@
     }
     .q-card.is-pass { border-left-color: var(--c-pass); background: var(--c-pass-bg); }
     .q-card.is-fail { border-left-color: var(--c-fail); background: var(--c-fail-bg); }
-    .q-card.is-na   { border-left-color: var(--c-na);   background: var(--c-na-bg); }
     .q-card.needs-answer { border-left-color: var(--c-accent) !important; }
 
     .q-meta { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; }
@@ -272,7 +265,6 @@
     }
     .q-card.is-pass .q-status { background: var(--c-pass); border-color: var(--c-pass); color: #fff; }
     .q-card.is-fail .q-status { background: var(--c-fail); border-color: var(--c-fail); color: #fff; }
-    .q-card.is-na  .q-status  { background: var(--c-na);   border-color: var(--c-na);   color: #fff; }
 
     .q-num {
       font-family: var(--font-mono); font-size: 0.68rem; font-weight: 600;
@@ -295,13 +287,13 @@
       cursor: pointer; transition: all 0.15s; user-select: none; letter-spacing: 0.04em;
     }
     .d-btn:hover { background: var(--c-surface-3); border-color: var(--c-border-2); color: var(--c-text); transform: translateY(-1px); }
+    .d-btn:active { transform: scale(0.96); }
+    .d-btn { -webkit-tap-highlight-color: transparent; }
 
     .d-opt.pass .d-btn { border-color: rgba(34,197,94,0.2); }
     .d-opt.pass input:checked + .d-btn { background: var(--c-pass); border-color: var(--c-pass); color: #fff; box-shadow: 0 2px 12px rgba(34,197,94,0.35); }
     .d-opt.fail .d-btn { border-color: rgba(239,68,68,0.2); }
     .d-opt.fail input:checked + .d-btn { background: var(--c-fail); border-color: var(--c-fail); color: #fff; box-shadow: 0 2px 12px rgba(239,68,68,0.35); }
-    .d-opt.na .d-btn   { border-color: rgba(100,116,139,0.2); }
-    .d-opt.na input:checked + .d-btn { background: var(--c-na); border-color: var(--c-na); color: #fff; }
 
     /* ─── Fail Remarks ───────────────────────────────────────── */
     .fail-remarks {
@@ -338,11 +330,13 @@
     .bottom-bar {
       position: fixed; bottom: 0; left: 0; right: 0;
       background: var(--c-surface); border-top: 1px solid var(--c-border);
-      box-shadow: 0 -4px 24px rgba(0,0,0,0.5); z-index: 99; padding: 0 20px;
+      box-shadow: 0 -4px 24px rgba(0,0,0,0.5); z-index: 99;
+      padding: 0 20px;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
     }
     .bottom-inner { max-width: 900px; margin: 0 auto; height: 68px; display: flex; align-items: center; gap: 16px; }
     .progress-wrap { flex: 1; display: flex; flex-direction: column; gap: 5px; }
-    .progress-track { height: 5px; background: var(--c-surface-3); border-radius: 999px; overflow: hidden; }
+    .progress-track { height: 6px; background: var(--c-surface-3); border-radius: 999px; overflow: hidden; }
     .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--c-accent-dark), var(--c-accent)); border-radius: 999px; transition: width 0.3s; }
     .progress-text { font-size: 0.75rem; font-weight: 600; color: var(--c-text-2); }
     .progress-pct { color: var(--c-accent); font-family: var(--font-mono); }
@@ -407,43 +401,6 @@
     }
     .btn-primary:hover { background: #ffc024; }
 
-    /* ─── Drawer ─────────────────────────────────────────────── */
-    .drawer {
-      position: fixed; top: 0; right: -100%; bottom: 0; width: 400px; max-width: 93vw;
-      background: var(--c-surface); border-left: 1px solid var(--c-border);
-      box-shadow: -8px 0 40px rgba(0,0,0,0.5); z-index: 150;
-      display: flex; flex-direction: column; transition: right 0.28s var(--ease);
-    }
-    .drawer.open { right: 0; }
-
-    .drawer-head {
-      padding: 18px 20px; background: var(--c-surface-2); border-bottom: 1px solid var(--c-border);
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .drawer-head-title { font-size: 0.9rem; font-weight: 700; color: var(--c-text); }
-    .drawer-close { background: transparent; border: none; color: var(--c-text-2); cursor: pointer; font-size: 1.3rem; line-height: 1; transition: color 0.12s; }
-    .drawer-close:hover { color: var(--c-text); }
-    .drawer-body { flex: 1; overflow-y: auto; padding: 14px; }
-    .drawer-foot { padding: 14px; border-top: 1px solid var(--c-border); display: flex; gap: 8px; }
-
-    .history-item { padding: 12px 14px; background: var(--c-surface-2); border: 1px solid var(--c-border); border-radius: var(--r-md); margin-bottom: 8px; }
-    .history-item-top { display: flex; align-items: center; justify-content: space-between; font-weight: 700; margin-bottom: 4px; color: var(--c-text); font-size: 0.85rem; }
-    .history-item-sub { color: var(--c-text-2); font-size: 0.75rem; }
-
-    .badge-pass { padding: 2px 8px; border-radius: 999px; background: var(--c-pass-bg); border: 1px solid var(--c-pass-border); color: var(--c-pass); font-size: 0.7rem; font-weight: 800; }
-    .badge-fail { padding: 2px 8px; border-radius: 999px; background: var(--c-fail-bg); border: 1px solid var(--c-fail-border); color: var(--c-fail); font-size: 0.7rem; font-weight: 800; }
-
-    /* ─── Skeleton ───────────────────────────────────────────── */
-    .skeleton {
-      background: linear-gradient(90deg, var(--c-surface-2) 25%, var(--c-surface-3) 50%, var(--c-surface-2) 75%);
-      background-size: 200% 100%; border-radius: 4px; animation: shimmer 1.5s infinite;
-    }
-    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-
-    .status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-    .status-dot.live { background: var(--c-pass); box-shadow: 0 0 6px var(--c-pass); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-
     /* ─── Print ──────────────────────────────────────────────── */
     @media print {
       body { background: #fff; color: #000; padding-bottom: 0; }
@@ -457,10 +414,97 @@
       ::placeholder { color: transparent !important; }
     }
 
+    /* ─── Tablet (≤768px) ─────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .form-grid-3 { grid-template-columns: 1fr 1fr; gap: 12px; }
+      .shell { padding: 20px 16px; }
+      .section-body { padding: 16px; }
+      .modal-card { max-width: 94vw; }
+      .modal-banner { padding: 28px 20px; }
+      .modal-result-title { font-size: 1.6rem; }
+      .ref-img { max-height: 400px; }
+    }
+
+    /* ─── Mobile (≤600px) ─────────────────────────────────────── */
     @media (max-width: 600px) {
       .header-logos, .header-divider { display: none; }
-      .shell { padding: 16px 14px; }
-      .btn-submit { padding: 0 18px; font-size: 0.78rem; }
+      .header-inner { height: 56px; padding: 0 14px; }
+      .header-eyebrow { font-size: 0.6rem; }
+      .header-title { font-size: 0.88rem; }
+
+      .shell { padding: 12px 10px; }
+      .section-block { border-radius: var(--r-md); margin-bottom: 12px; }
+      .section-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+      .section-title { font-size: 0.82rem; }
+      .section-hint { font-size: 0.7rem; }
+      .section-body { padding: 14px 12px; }
+      .section-badge { font-size: 0.62rem; padding: 2px 7px; }
+
+      .form-grid-2, .form-grid-3 { grid-template-columns: 1fr; gap: 12px; }
+      /* 16px prevents iOS Safari auto-zoom on input focus */
+      .form-input, .form-textarea { font-size: 16px; padding: 12px 14px; border-radius: 8px; }
+      .form-label { font-size: 0.72rem; margin-bottom: 5px; }
+
+      .type-grid { gap: 10px; }
+      .type-card { padding: 20px 12px; gap: 6px; }
+      .type-icon { font-size: 1.8rem; }
+      .type-name { font-size: 0.8rem; }
+      .type-desc { font-size: 0.68rem; }
+
+      .q-card { padding: 14px 12px; border-radius: 8px; }
+      .q-text { font-size: 0.82rem; line-height: 1.45; }
+      .q-num { font-size: 0.62rem; padding: 1px 5px; }
+      .q-status { width: 18px; height: 18px; font-size: 0.6rem; }
+      .questions-list { gap: 8px; }
+
+      /* Touch-friendly decision buttons — 52px tall, easy thumb tap */
+      .decision-row { gap: 6px; }
+      .d-btn { height: 52px; font-size: 0.88rem; border-radius: 8px; }
+
+      .fail-remarks { padding: 10px; margin-top: 10px; }
+      .fail-remarks-label { font-size: 0.68rem; }
+
+      /* Bottom bar stacks vertically on phones */
+      .bottom-bar { padding: 0 12px; }
+      .bottom-inner {
+        height: auto; padding: 12px 0;
+        flex-direction: column; gap: 10px;
+      }
+      .progress-wrap { width: 100%; }
+      .progress-text { text-align: center; font-size: 0.72rem; }
+      .btn-submit {
+        width: 100%; height: 52px; font-size: 0.92rem;
+        border-radius: 10px; justify-content: center;
+      }
+
+      .modal-overlay { padding: 12px; align-items: flex-end; }
+      .modal-card { max-width: 100%; border-radius: 16px 16px 0 0; }
+      .modal-banner { padding: 24px 16px; }
+      .modal-result-icon { font-size: 3rem; }
+      .modal-result-title { font-size: 1.4rem; }
+      .modal-result-sub { font-size: 0.8rem; }
+      .modal-body { padding: 16px; }
+      .modal-table td { padding: 8px 6px; font-size: 0.8rem; }
+      .modal-actions { flex-direction: column; gap: 8px; }
+      .modal-actions .btn-secondary,
+      .modal-actions .btn-primary { height: 48px; font-size: 0.85rem; border-radius: 8px; }
+      .tagout-notice { font-size: 0.78rem; padding: 10px 12px; }
+
+      .val-alert { font-size: 0.78rem; padding: 10px 12px; }
+      .ref-img { max-height: 300px; }
+      .ref-caption { font-size: 0.7rem; padding: 7px 10px; }
+    }
+
+    /* ─── Small phones (≤400px) ────────────────────────────────── */
+    @media (max-width: 400px) {
+      .shell { padding: 10px 8px; }
+      .section-body { padding: 12px 10px; }
+      .type-grid { grid-template-columns: 1fr; gap: 8px; }
+      .type-card { flex-direction: row; padding: 14px; gap: 10px; }
+      .type-icon { font-size: 1.5rem; }
+      .header-title { font-size: 0.82rem; }
+      .d-btn { height: 48px; font-size: 0.82rem; }
+      .btn-submit { height: 50px; font-size: 0.85rem; }
     }
   </style>
 </head>
@@ -747,19 +791,6 @@
     </div>
   </div>
 
-  <!-- ═══ HISTORY DRAWER ════════════════════════════════════════ -->
-  <div id="historyDrawer" class="drawer" role="complementary" aria-label="Inspection records">
-    <div class="drawer-head">
-      <div class="drawer-head-title">📋 Inspection Records</div>
-      <button type="button" class="drawer-close" id="closeHistoryBtn" aria-label="Close">✕</button>
-    </div>
-    <div class="drawer-body" id="historyList"></div>
-    <div class="drawer-foot">
-      <button type="button" class="btn-secondary" id="exportCsvBtn" style="font-size:0.8rem;">📥 Export CSV</button>
-      <button type="button" class="btn-secondary" id="clearRecordsBtn" style="font-size:0.8rem;color:var(--c-fail);">Clear All</button>
-    </div>
-  </div>
-
   <!-- ═══ SCRIPT ════════════════════════════════════════════════ -->
   <script>
     'use strict';
@@ -861,7 +892,7 @@
       const stat = document.getElementById('qstatus-' + id);
       const box  = document.getElementById('failBox_' + id);
 
-      card.classList.remove('is-pass','is-fail','is-na','needs-answer');
+      card.classList.remove('is-pass','is-fail','needs-answer');
       card.style.removeProperty('border-color');
 
       const isFail = isFailAnswer(q, answers[id]);
@@ -1135,7 +1166,7 @@
       document.getElementById('sec-specific').textContent = 'Type-Specific Points';
       document.getElementById('specificSectionHint').textContent = 'Please select a Ladder Type above';
       document.querySelectorAll('.q-card').forEach(function(c) {
-        c.classList.remove('is-pass','is-fail','is-na','needs-answer');
+        c.classList.remove('is-pass','is-fail','needs-answer');
         c.style.removeProperty('border-color');
       });
       document.querySelectorAll('.fail-remarks').forEach(function(b) { b.style.display = 'none'; });
