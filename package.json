@@ -1,5 +1,11 @@
 {
   "dependencies": {
-    "pg": "^8.23.1"
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^18.0.6",
+    "exceljs": "^4.4.0",
+    "express": "^5.2.1",
+    "multer": "^2.4.0",
+    "pg": "^8.23.1",
+    "xlsx": "^0.18.5"
   }
 }
