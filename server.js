@@ -594,6 +594,10 @@ app.use((error, req, res, next) => {
 });
 
 const port = Number(process.env.PORT || 8081);
-app.listen(port, () => {
-  console.log(`Safety Inspection Admin running on http://localhost:${port}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Safety Inspection Admin running on http://localhost:${port}`);
+  });
+}
+
+export default app;
