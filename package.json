@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "cookie-parser": "^1.4.7",
     "dotenv": "^18.0.6",
