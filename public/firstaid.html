@@ -840,16 +840,15 @@
         return m;
       }, {});
 
-      CHECKLIST_DATA = { firstaid: [] };
-      questions.forEach(function(q) {
-        var item = Object.assign({}, q, { text: q.question, options: optsByQ[q.id] || [] });
-        if (!CHECKLIST_DATA[item.category]) CHECKLIST_DATA[item.category] = [];
-        CHECKLIST_DATA[item.category].push(item);
-      });
+      CHECKLIST_DATA = {
+        firstaid: questions.map(function(q) {
+          return Object.assign({}, q, { text: q.question, options: optsByQ[q.id] || [] });
+        })
+      };
 
       var gc = document.getElementById('checklistContainer');
       gc.innerHTML = '';
-      if (CHECKLIST_DATA.firstaid) CHECKLIST_DATA.firstaid.forEach(function(q) { renderQuestion(q, gc); });
+      CHECKLIST_DATA.firstaid.forEach(function(q) { renderQuestion(q, gc); });
 
       updateProgress();
     }
