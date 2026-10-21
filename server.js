@@ -346,164 +346,212 @@ app.get('/api/export/questionnaire', requireAdmin, async (req, res, next) => {
 
 app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
   try {
-    const filters = [];
-    const values = [];
-    if (req.query.from) { values.push(req.query.from); filters.push(`i.inspection_date >= $${values.length}`); }
-    if (req.query.to) { values.push(req.query.to); filters.push(`i.inspection_date <= $${values.length}`); }
-    if (req.query.ladder) { values.push(`%${req.query.ladder}%`); filters.push(`i.ladder_no ilike $${values.length}`); }
-    if (req.query.inspector) { values.push(`%${req.query.inspector}%`); filters.push(`i.inspector_name ilike $${values.length}`); }
-    if (req.query.status) { values.push(req.query.status); filters.push(`i.overall_result = $${values.length}`); }
-    
-    const where = filters.length ? `where ${filters.join(' and ')}` : '';
+    const mode = req.query.mode === 'fire' ? 'fire' : req.query.mode === 'firstaid' ? 'firstaid' : 'ladder';
 
-    const { rows } = await pool.query(`
-      select i.id as inspection_id,
-             i.inspection_date,
-             i.ladder_no,
-             i.section,
-             i.height_feet,
-             i.ladder_type,
-             i.inspector_name,
-             i.epf_number,
-             i.overall_result,
-             i.remarks                     as overall_remarks,
-             i.created_at,
-             r.display_order_snapshot      as question_number,
-             r.category_snapshot           as category,
-             r.question_text_snapshot      as question,
-             r.result                      as answer,
-             r.remarks                     as answer_remarks
-        from inspections i
-        left join inspection_results r on r.inspection_id = i.id
-        ${where}
-       order by i.inspection_date desc, i.created_at desc, r.display_order_snapshot asc
-    `, values);
+    if (mode === 'firstaid') {
+      const filters = [];
+      const values = [];
+      if (req.query.from) { values.push(req.query.from); filters.push(`i.inspection_date >= $${values.length}`); }
+      if (req.query.to) { values.push(req.query.to); filters.push(`i.inspection_date <= $${values.length}`); }
+      if (req.query.ladder) { values.push(`%${req.query.ladder}%`); filters.push(`(i.box_no ilike $${values.length} or i.location ilike $${values.length})`); }
+      if (req.query.inspector) { values.push(`%${req.query.inspector}%`); filters.push(`i.inspector_name ilike $${values.length}`); }
+      if (req.query.status) { values.push(req.query.status); filters.push(`i.overall_result = $${values.length}`); }
+      const where = filters.length ? `where ${filters.join(' and ')}` : '';
 
-    const inspectionsMap = new Map();
-      
+      const { rows } = await pool.query(`
+        select i.id as inspection_id,
+               i.inspection_date,
+               i.box_no,
+               i.location,
+               i.inspector_name,
+               i.epf_number,
+               i.overall_result,
+               i.remarks as overall_remarks,
+               i.created_at,
+               r.display_order_snapshot as question_number,
+               r.question_text_snapshot as question,
+               r.result as answer,
+               coalesce(r.answer_label, r.result) as answer_label,
+               r.remarks as answer_remarks
+          from firstaid_inspections i
+          left join firstaid_inspection_results r on r.inspection_id = i.id
+          ${where}
+         order by i.inspection_date desc, i.created_at desc, r.display_order_snapshot asc
+      `, values);
+
+      const inspectionsMap = new Map();
       rows.forEach(r => {
         if (!inspectionsMap.has(r.inspection_id)) {
           inspectionsMap.set(r.inspection_id, {
             'Inspection ID': r.inspection_id,
             'Date': r.inspection_date ? r.inspection_date.toISOString().split('T')[0] : '',
-            'Ladder No.': r.ladder_no,
-            'Section': r.section,
-            'Feet': r.height_feet,
-            'Ladder Type (Step ladder/Extension ladder)': r.ladder_type,
+            'Box No': r.box_no,
+            'Location': r.location,
             'Inspector Name': r.inspector_name,
             'EPF Number': r.epf_number,
             'Overall Result': r.overall_result,
-            'Overall Remarks': r.overall_remarks
+            'Overall Remarks': r.overall_remarks || '',
+            item_remarks: []
           });
         }
         if (r.question) {
-          // Store question with category prefix
-          const cat = r.category || '';
-          inspectionsMap.get(r.inspection_id)[`${cat}:::${r.question}`] = r.answer;
+          const rec = inspectionsMap.get(r.inspection_id);
+          const cleanQ = r.question.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+          rec[cleanQ] = r.answer_label || r.answer;
+          if (r.answer_remarks && r.answer_remarks.trim()) {
+            rec.item_remarks.push(`${r.question}: ${r.answer_remarks.trim()}`);
+          }
         }
       });
-  
+
       const finalRows = Array.from(inspectionsMap.values());
-  
       let buffer;
       try {
-        const templatePath = path.join(__dirname, 'template.xlsx');
+        const templatePath = path.join(__dirname, 'firstaid_template.xlsx');
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.readFile(templatePath);
         const sheet = workbook.getWorksheet(1);
-        
-        const headerRow6 = sheet.getRow(6);
-        const headerRow7 = sheet.getRow(7);
-        const headers = [];
-        const categories = [];
-        const maxCols = Math.max(headerRow6.cellCount, headerRow7.cellCount, 40);
-        
-        for (let i = 1; i <= maxCols; i++) {
-           let catVal = headerRow6.getCell(i).value;
-           if (catVal && typeof catVal === 'object' && catVal.richText) catVal = catVal.richText.map(t=>t.text).join('');
-           categories[i] = typeof catVal === 'string' ? catVal.trim().toLowerCase() : '';
 
-           let val = headerRow7.getCell(i).value;
-           if (val && typeof val === 'object' && val.richText) val = val.richText.map(t=>t.text).join('');
-           if (!val) {
-               val = headerRow6.getCell(i).value;
-               if (val && typeof val === 'object' && val.richText) val = val.richText.map(t=>t.text).join('');
-           }
-           headers[i] = typeof val === 'string' ? val.trim() : (val ? String(val).trim() : '');
-        }
-        
-        const styleRow = sheet.getRow(8);
-        
-        // Clear out any old dummy data baked into the template from row 8 onwards
-        const maxRowsToClear = Math.max(8 + finalRows.length, sheet.rowCount + 10);
-        for (let r = 8; r <= maxRowsToClear; r++) {
-            const clearRow = sheet.getRow(r);
-            clearRow.eachCell({ includeEmpty: true }, (cell) => {
-                cell.value = null; 
-                if (r > 8) cell.style = {};
-            });
-            if (r > 8) clearRow.commit();
-        }
-  
+        const headerRow9 = sheet.getRow(9);
+        const headers = [];
+        headerRow9.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+          headers[colNumber] = cell.value ? String(cell.value).trim() : '';
+        });
+
+        const styleRow = sheet.getRow(10);
+
         finalRows.forEach((row, rowIndex) => {
-          const excelRowNumber = 8 + rowIndex;
+          const excelRowNumber = 10 + rowIndex;
           const excelRow = sheet.getRow(excelRowNumber);
-          
-          headers.forEach((h, colNumber) => {
-            if (!h) return;
-            const targetCell = excelRow.getCell(colNumber);
-            
-            // Copy style from row 8 to preserve borders and formatting
-            targetCell.style = Object.assign({}, styleRow.getCell(colNumber).style);
-            
-            const cleanH = h.replace(/\s+/g, ' ').replace(/[?]/g, '').trim().toLowerCase();
-            const excelCat = categories[colNumber] || '';
-            
+
+          for (let c = 1; c <= 26; c++) {
+            const targetCell = excelRow.getCell(c);
+            if (styleRow.getCell(c).style) {
+              targetCell.style = Object.assign({}, styleRow.getCell(c).style);
+            }
+          }
+
+          excelRow.getCell(1).value = row['Box No'] || '';
+          excelRow.getCell(2).value = row['Location'] || '';
+
+          // Question items from col 3 to 20
+          for (let c = 3; c <= 20; c++) {
+            const h = headers[c];
+            if (!h) continue;
+            const cleanH = h.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
             let matchedVal = '';
             for (const [key, val] of Object.entries(row)) {
-                if (key.includes(':::')) {
-                    const [dbCat, dbQuestion] = key.split(':::');
-                    const cleanDbCat = dbCat.replace(/\s+/g, ' ').trim().toLowerCase();
-                    const cleanDbQuestion = dbQuestion.replace(/\s+/g, ' ').replace(/[?]/g, '').trim().toLowerCase();
-                    
-                    if (cleanDbQuestion === cleanH) {
-                        // Enforce category match if Excel column has a category header
-                        if (excelCat.includes('extension') && !cleanDbCat.includes('extension')) continue;
-                        if (excelCat.includes('step') && !cleanDbCat.includes('step')) continue;
-                        
-                        matchedVal = val;
-                        break;
-                    }
-                } else {
-                    if (key.replace(/\s+/g, ' ').replace(/[?]/g, '').trim().toLowerCase() === cleanH) {
-                        matchedVal = val;
-                        break;
-                    }
-                }
+              if (key === cleanH || key.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === cleanH) {
+                matchedVal = val;
+                break;
+              }
             }
-            targetCell.value = matchedVal || '';
-          });
+            excelRow.getCell(c).value = matchedVal || '';
+          }
+
+          // Remark in col 21
+          const allRemarks = [];
+          if (row['Overall Remarks']) allRemarks.push(row['Overall Remarks']);
+          if (row.item_remarks && row.item_remarks.length) allRemarks.push(row.item_remarks.join('; '));
+          excelRow.getCell(21).value = allRemarks.join(' | ') || '';
+
+          // Metadata in cols 23-26
+          excelRow.getCell(23).value = row['Date'] || '';
+          excelRow.getCell(24).value = row['Inspector Name'] || '';
+          excelRow.getCell(25).value = row['EPF Number'] || '';
+          excelRow.getCell(26).value = row['Overall Result'] || '';
+
           excelRow.commit();
         });
-        
+
+        sheet.getCell(9, 23).value = 'Date';
+        sheet.getCell(9, 24).value = 'Inspector Name';
+        sheet.getCell(9, 25).value = 'EPF Number';
+        sheet.getCell(9, 26).value = 'Overall Result';
+
         buffer = await workbook.xlsx.writeBuffer();
-    } catch (tmplErr) {
-      console.error(tmplErr);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(finalRows.length ? finalRows : [{ note: 'No records found' }]), 'Inspection Results');
-      buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      } catch (tmplErr) {
+        console.error('First aid template export fallback:', tmplErr);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(finalRows.length ? finalRows : [{ note: 'No records found' }]), 'First Aid Results');
+        buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+      }
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename="FIRST-AID-CHECKLIST-EXPORT.xlsx"');
+      return res.send(buffer);
     }
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename="questionnaire.xlsx"');
-    res.send(buffer);
-  } catch (error) {
-    next(error);
-  }
-});
+    if (mode === 'fire') {
+      const filters = [];
+      const values = [];
+      if (req.query.from) { values.push(req.query.from); filters.push(`i.inspection_date >= $${values.length}`); }
+      if (req.query.to) { values.push(req.query.to); filters.push(`i.inspection_date <= $${values.length}`); }
+      if (req.query.ladder) { values.push(`%${req.query.ladder}%`); filters.push(`(i.point_no ilike $${values.length} or i.location ilike $${values.length})`); }
+      if (req.query.inspector) { values.push(`%${req.query.inspector}%`); filters.push(`i.inspector_name ilike $${values.length}`); }
+      if (req.query.status) { values.push(req.query.status); filters.push(`i.overall_result = $${values.length}`); }
+      const where = filters.length ? `where ${filters.join(' and ')}` : '';
 
-app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
-  try {
+      const { rows } = await pool.query(`
+        select i.id as inspection_id,
+               i.inspection_date,
+               i.point_no,
+               i.location,
+               i.quantity,
+               i.extinguisher_type,
+               i.pressure_weight,
+               i.inspector_name,
+               i.epf_number,
+               i.overall_result,
+               i.remarks as overall_remarks,
+               i.created_at,
+               r.display_order_snapshot as question_number,
+               r.question_text_snapshot as question,
+               r.result as answer,
+               r.remarks as answer_remarks
+          from fire_inspections i
+          left join fire_inspection_results r on r.inspection_id = i.id
+          ${where}
+         order by i.inspection_date desc, i.created_at desc, r.display_order_snapshot asc
+      `, values);
+
+      const inspectionsMap = new Map();
+      rows.forEach(r => {
+        if (!inspectionsMap.has(r.inspection_id)) {
+          inspectionsMap.set(r.inspection_id, {
+            'Inspection ID': r.inspection_id,
+            'Date': r.inspection_date ? r.inspection_date.toISOString().split('T')[0] : '',
+            'Point No.': r.point_no,
+            'Location': r.location,
+            'Extinguisher Type': r.extinguisher_type,
+            'Quantity': r.quantity,
+            'Pressure / Weight': r.pressure_weight || '',
+            'Inspector Name': r.inspector_name,
+            'EPF Number': r.epf_number || '',
+            'Overall Result': r.overall_result,
+            'Overall Remarks': r.overall_remarks || ''
+          });
+        }
+        if (r.question) {
+          const rec = inspectionsMap.get(r.inspection_id);
+          rec[r.question] = r.answer;
+          if (r.answer_remarks && r.answer_remarks.trim()) {
+            rec[`${r.question} (Remarks)`] = r.answer_remarks.trim();
+          }
+        }
+      });
+
+      const finalRows = Array.from(inspectionsMap.values());
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(finalRows.length ? finalRows : [{ note: 'No records found' }]), 'Fire Inspections');
+      const buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename="FIRE-EXTINGUISHER-CHECKLIST-EXPORT.xlsx"');
+      return res.send(buffer);
+    }
+
+    // Default: Ladder
     const filters = [];
     const values = [];
     if (req.query.from) { values.push(req.query.from); filters.push(`i.inspection_date >= $${values.length}`); }
@@ -538,16 +586,15 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
     `, values);
 
     const inspectionsMap = new Map();
-    
     rows.forEach(r => {
       if (!inspectionsMap.has(r.inspection_id)) {
         inspectionsMap.set(r.inspection_id, {
           'Inspection ID': r.inspection_id,
           'Date': r.inspection_date ? r.inspection_date.toISOString().split('T')[0] : '',
-          'Ladder No': r.ladder_no,
-          'Section/Location': r.section,
-          'Height (ft)': r.height_feet,
-          'Type': r.ladder_type,
+          'Ladder No.': r.ladder_no,
+          'Section': r.section,
+          'Feet': r.height_feet,
+          'Ladder Type (Step ladder/Extension ladder)': r.ladder_type,
           'Inspector Name': r.inspector_name,
           'EPF Number': r.epf_number,
           'Overall Result': r.overall_result,
@@ -555,15 +602,12 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
         });
       }
       if (r.question) {
-        inspectionsMap.get(r.inspection_id)[r.question] = r.answer;
-        if (r.answer_remarks) {
-          inspectionsMap.get(r.inspection_id)[`${r.question} (Remarks)`] = r.answer_remarks;
-        }
+        const cat = r.category || '';
+        inspectionsMap.get(r.inspection_id)[`${cat}:::${r.question}`] = r.answer;
       }
     });
 
     const finalRows = Array.from(inspectionsMap.values());
-
     let buffer;
     try {
       const templatePath = path.join(__dirname, 'template.xlsx');
@@ -571,30 +615,59 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
       await workbook.xlsx.readFile(templatePath);
       const sheet = workbook.getWorksheet(1);
       
-      const headerRow = sheet.getRow(7);
+      const headerRow6 = sheet.getRow(6);
+      const headerRow7 = sheet.getRow(7);
       const headers = [];
-      headerRow.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-          headers[colNumber] = cell.value; 
-      });
+      const categories = [];
+      const maxCols = Math.max(headerRow6.cellCount, headerRow7.cellCount, 40);
+      
+      for (let i = 1; i <= maxCols; i++) {
+         let catVal = headerRow6.getCell(i).value;
+         if (catVal && typeof catVal === 'object' && catVal.richText) catVal = catVal.richText.map(t=>t.text).join('');
+         categories[i] = typeof catVal === 'string' ? catVal.trim().toLowerCase() : '';
+         
+         let hVal = headerRow7.getCell(i).value;
+         if (hVal && typeof hVal === 'object' && hVal.richText) hVal = hVal.richText.map(t=>t.text).join('');
+         headers[i] = typeof hVal === 'string' ? hVal.trim() : '';
+      }
+      
+      const styleRow = sheet.getRow(8);
       
       finalRows.forEach((row, rowIndex) => {
         const excelRowNumber = 8 + rowIndex;
-        // In exceljs we can just get the row and it creates it if it doesn't exist
         const excelRow = sheet.getRow(excelRowNumber);
         
-        headers.forEach((header, colNumber) => {
-          if (!header) return;
-          const h = header.toString().trim();
-          if (h === 'Ladder No.') excelRow.getCell(colNumber).value = row['Ladder No'] || '';
-          else if (h === 'Section') excelRow.getCell(colNumber).value = row['Section/Location'] || '';
-          else if (h === 'Feet') excelRow.getCell(colNumber).value = row['Height (ft)'] || '';
-          else if (h === 'Ladder Type (Step ladder/Extension ladder)') excelRow.getCell(colNumber).value = row['Type'] || '';
-          else {
-            excelRow.getCell(colNumber).value = row[h] || '';
+        headers.forEach((h, colNumber) => {
+          if (!h) return;
+          const targetCell = excelRow.getCell(colNumber);
+          targetCell.style = Object.assign({}, styleRow.getCell(colNumber).style);
+          
+          const cleanH = h.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+          const excelCat = categories[colNumber] || '';
+          
+          let matchedVal = '';
+          for (const [key, val] of Object.entries(row)) {
+              if (key.includes(':::')) {
+                  const [dbCat, dbQuestion] = key.split(':::');
+                  const cleanDbCat = dbCat.replace(/\s+/g, ' ').trim().toLowerCase();
+                  const cleanDbQuestion = dbQuestion.replace(/\s+/g, ' ').replace(/[?]/g, '').trim().toLowerCase();
+                  
+                  if (cleanDbQuestion === cleanH) {
+                      if (excelCat.includes('extension') && !cleanDbCat.includes('extension')) continue;
+                      if (excelCat.includes('step') && !cleanDbCat.includes('step')) continue;
+                      matchedVal = val;
+                      break;
+                  }
+              } else {
+                  if (key.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === cleanH) {
+                      matchedVal = val;
+                      break;
+                  }
+              }
           }
+          targetCell.value = matchedVal || '';
         });
 
-        // Add additional metadata columns starting at AC (column 29)
         excelRow.getCell(29).value = row['Date'] || '';
         excelRow.getCell(30).value = row['Inspector Name'] || '';
         excelRow.getCell(31).value = row['EPF Number'] || '';
@@ -603,7 +676,6 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
         excelRow.commit();
       });
 
-      // Write headers for the extra metadata on row 7
       sheet.getCell(7, 29).value = 'Date';
       sheet.getCell(7, 30).value = 'Inspector Name';
       sheet.getCell(7, 31).value = 'EPF Number';
@@ -613,7 +685,6 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
       buffer = await workbook.xlsx.writeBuffer();
     } catch (tmplErr) {
       console.error(tmplErr);
-      // Fallback if template is broken
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(finalRows.length ? finalRows : [{ note: 'No records found' }]), 'Inspection Results');
       buffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
