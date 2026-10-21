@@ -599,7 +599,7 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
           'Inspector Name': r.inspector_name,
           'EPF Number': r.epf_number,
           'Overall Result': r.overall_result,
-          'Overall Remarks': r.overall_remarks
+          'Overall Remarks': r.overall_remarks || ''
         });
       }
       if (r.question) {
@@ -633,55 +633,69 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
       }
       
       const styleRow = sheet.getRow(8);
+
+      // Clear any pre-existing sample or template rows from row 8 downwards
+      for (let r = 8; r <= sheet.rowCount; r++) {
+        const er = sheet.getRow(r);
+        for (let c = 1; c <= 35; c++) {
+          er.getCell(c).value = null;
+        }
+        er.commit();
+      }
       
       finalRows.forEach((row, rowIndex) => {
         const excelRowNumber = 8 + rowIndex;
         const excelRow = sheet.getRow(excelRowNumber);
         
-        headers.forEach((h, colNumber) => {
-          if (!h) return;
-          const targetCell = excelRow.getCell(colNumber);
-          targetCell.style = Object.assign({}, styleRow.getCell(colNumber).style);
-          
+        for (let c = 1; c <= 33; c++) {
+          const targetCell = excelRow.getCell(c);
+          if (styleRow.getCell(c).style) {
+            targetCell.style = Object.assign({}, styleRow.getCell(c).style);
+          }
+        }
+
+        excelRow.getCell(1).value = row['Date'] || '';
+        excelRow.getCell(2).value = row['Inspector Name'] || '';
+        excelRow.getCell(3).value = row['EPF Number'] || '';
+        excelRow.getCell(4).value = row['Overall Result'] || '';
+        excelRow.getCell(5).value = row['Ladder No.'] || '';
+        excelRow.getCell(6).value = row['Section'] || '';
+        excelRow.getCell(7).value = row['Feet'] || '';
+        excelRow.getCell(8).value = row['Ladder Type (Step ladder/Extension ladder)'] || '';
+
+        // Match checklist questions from column 9 to 32
+        for (let c = 9; c <= 32; c++) {
+          const h = headers[c];
+          if (!h) continue;
           const cleanH = h.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
-          const excelCat = categories[colNumber] || '';
+          const excelCat = categories[c] || '';
           
           let matchedVal = '';
           for (const [key, val] of Object.entries(row)) {
-              if (key.includes(':::')) {
-                  const [dbCat, dbQuestion] = key.split(':::');
-                  const cleanDbCat = dbCat.replace(/\s+/g, ' ').trim().toLowerCase();
-                  const cleanDbQuestion = dbQuestion.replace(/\s+/g, ' ').replace(/[?]/g, '').trim().toLowerCase();
-                  
-                  if (cleanDbQuestion === cleanH) {
-                      if (excelCat.includes('extension') && !cleanDbCat.includes('extension')) continue;
-                      if (excelCat.includes('step') && !cleanDbCat.includes('step')) continue;
-                      matchedVal = val;
-                      break;
-                  }
-              } else {
-                  if (key.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === cleanH) {
-                      matchedVal = val;
-                      break;
-                  }
+            if (key.includes(':::')) {
+              const [dbCat, dbQuestion] = key.split(':::');
+              const cleanDbCat = dbCat.replace(/\s+/g, ' ').trim().toLowerCase();
+              const cleanDbQuestion = dbQuestion.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
+              
+              if (cleanDbQuestion === cleanH) {
+                if (excelCat.includes('extension') && !cleanDbCat.includes('extension')) continue;
+                if (excelCat.includes('step') && !cleanDbCat.includes('step')) continue;
+                matchedVal = val;
+                break;
               }
+            } else {
+              if (key.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase() === cleanH) {
+                matchedVal = val;
+                break;
+              }
+            }
           }
-          targetCell.value = matchedVal || '';
-        });
+          excelRow.getCell(c).value = matchedVal || '';
+        }
 
-        excelRow.getCell(29).value = row['Date'] || '';
-        excelRow.getCell(30).value = row['Inspector Name'] || '';
-        excelRow.getCell(31).value = row['EPF Number'] || '';
-        excelRow.getCell(32).value = row['Overall Result'] || '';
         excelRow.getCell(33).value = row['Overall Remarks'] || '';
         excelRow.commit();
       });
-
-      sheet.getCell(7, 29).value = 'Date';
-      sheet.getCell(7, 30).value = 'Inspector Name';
-      sheet.getCell(7, 31).value = 'EPF Number';
-      sheet.getCell(7, 32).value = 'Overall Result';
-      sheet.getCell(7, 33).value = 'Overall Remarks';
       
       buffer = await workbook.xlsx.writeBuffer();
     } catch (tmplErr) {
