@@ -14,7 +14,7 @@
     { "src": "/api/(.*)", "dest": "/api/index.js" },
     { "src": "/(.*\\.(html|js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot))", "dest": "/public/$1" },
     { "src": "/assets/(.*)", "dest": "/public/assets/$1" },
-    { "src": "/(ladder|fire|thankyou)\\.html", "dest": "/public/$1.html" },
+    { "src": "/(ladder|fire|firstaid|thankyou)\\.html", "dest": "/public/$1.html" },
     { "src": "/", "dest": "/public/index.html" }
   ]
 }

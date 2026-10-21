@@ -57,10 +57,6 @@ app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.get('/admin', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
-
 function requireAdmin(req, res, next) {
   if (sessions.has(req.cookies.admin_session)) return next();
   res.status(401).json({ error: 'Not authenticated' });
