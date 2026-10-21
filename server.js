@@ -17,13 +17,21 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 const sessions = new Set();
 
 function getTables(req) {
-  const mode = req.query.mode === 'fire' ? 'fire' : 'ladder';
+  const mode = req.query.mode === 'fire' ? 'fire' : req.query.mode === 'firstaid' ? 'firstaid' : 'ladder';
   if (mode === 'fire') {
     return {
       points: 'fire_inspection_points',
       options: 'fire_question_options',
       inspections: 'fire_inspections',
       results: 'fire_inspection_results'
+    };
+  }
+  if (mode === 'firstaid') {
+    return {
+      points: 'firstaid_inspection_points',
+      options: 'firstaid_question_options',
+      inspections: 'firstaid_inspections',
+      results: 'firstaid_inspection_results'
     };
   }
   return {
@@ -113,13 +121,14 @@ function validateQuestions(questions) {
   return errors;
 }
 
-async function getQuestions(mode) {
-  const tables = getTables({query: {mode}});
-  const { rows: questions } = await pool.query(`
-    select id, category, question, question_type, display_order, is_required, is_active, allow_remarks, created_at, updated_at
-    from ${tables.points}
-    order by display_order, id
-  `);
+async function getQuestions(mode = 'ladder') {
+  const tables = getTables({ query: { mode } });
+  const isLadder = mode !== 'fire' && mode !== 'firstaid';
+  const query = isLadder
+    ? `select id, category, question, display_order, is_required, is_active, created_at, updated_at from ${tables.points} order by display_order, id`
+    : `select id, '${mode}' as category, question, display_order, is_required, is_active, created_at, updated_at from ${tables.points} order by display_order, id`;
+
+  const { rows: questions } = await pool.query(query);
   const { rows: options } = await pool.query(`
     select id, question_id, option_label, option_value, sort_order, is_fail_value, is_active
     from ${tables.options}
@@ -130,7 +139,12 @@ async function getQuestions(mode) {
     if (!grouped.has(option.question_id)) grouped.set(option.question_id, []);
     grouped.get(option.question_id).push(option);
   }
-  return questions.map(q => ({ ...q, options: grouped.get(q.id) || [] }));
+  return questions.map(q => ({
+    ...q,
+    question_type: 'decision',
+    allow_remarks: true,
+    options: grouped.get(q.id) || []
+  }));
 }
 
 async function replaceOptions(client, questionId, options = [], mode = 'ladder') {
@@ -176,14 +190,22 @@ app.get('/api/questions', requireAdmin, async (req, res, next) => {
 app.post('/api/questions', requireAdmin, async (req, res, next) => {
   const q = req.body;
   const client = await pool.connect();
+  const isLadder = req.query.mode !== 'fire' && req.query.mode !== 'firstaid';
   try {
     await client.query('begin');
-    const { rows } = await client.query(
-       `insert into ${getTables(req).points} (category, question, question_type, display_order, is_required, is_active, allow_remarks)
-       values ($1, $2, $3, $4, $5, $6, true)
-       returning id`,
-      [q.category, q.question, q.question_type, q.display_order, !!q.is_required, q.is_active !== false],
-    );
+    const { rows } = isLadder
+      ? await client.query(
+          `insert into ${getTables(req).points} (category, question, display_order, is_required, is_active)
+           values ($1, $2, $3, $4, $5)
+           returning id`,
+          [q.category || 'general', q.question, q.display_order, !!q.is_required, q.is_active !== false],
+        )
+      : await client.query(
+          `insert into ${getTables(req).points} (question, display_order, is_required, is_active)
+           values ($1, $2, $3, $4)
+           returning id`,
+          [q.question, q.display_order, !!q.is_required, q.is_active !== false],
+        );
     await replaceOptions(client, rows[0].id, q.options || [], req.query.mode);
     await client.query('commit');
     res.json({ id: rows[0].id });
@@ -198,15 +220,26 @@ app.post('/api/questions', requireAdmin, async (req, res, next) => {
 app.put('/api/questions/:id', requireAdmin, async (req, res, next) => {
   const q = req.body;
   const client = await pool.connect();
+  const isLadder = req.query.mode !== 'fire' && req.query.mode !== 'firstaid';
   try {
     await client.query('begin');
-    await client.query(
-       `update ${getTables(req).points}
-          set category=$1, question=$2, question_type=$3, display_order=$4,
-              is_required=$5, is_active=$6, updated_at=now()
-        where id=$7`,
-      [q.category, q.question, q.question_type, q.display_order, !!q.is_required, q.is_active !== false, req.params.id],
-    );
+    if (isLadder) {
+      await client.query(
+        `update ${getTables(req).points}
+            set category=$1, question=$2, display_order=$3,
+                is_required=$4, is_active=$5, updated_at=now()
+          where id=$6`,
+        [q.category || 'general', q.question, q.display_order, !!q.is_required, q.is_active !== false, req.params.id],
+      );
+    } else {
+      await client.query(
+        `update ${getTables(req).points}
+            set question=$1, display_order=$2,
+                is_required=$3, is_active=$4, updated_at=now()
+          where id=$5`,
+        [q.question, q.display_order, !!q.is_required, q.is_active !== false, req.params.id],
+      );
+    }
     await replaceOptions(client, req.params.id, q.options || [], req.query.mode);
     await client.query('commit');
     res.json({ ok: true });
@@ -220,7 +253,7 @@ app.put('/api/questions/:id', requireAdmin, async (req, res, next) => {
 
 app.delete('/api/questions/:id', requireAdmin, async (req, res, next) => {
   try {
-    await pool.query('update ${getTables(req).points} set is_active=false, updated_at=now() where id=$1', [req.params.id]);
+    await pool.query(`update ${getTables(req).points} set is_active=false, updated_at=now() where id=$1`, [req.params.id]);
     res.json({ ok: true });
   } catch (error) {
     next(error);
@@ -230,12 +263,15 @@ app.delete('/api/questions/:id', requireAdmin, async (req, res, next) => {
 app.get('/api/inspections', requireAdmin, async (req, res, next) => {
   try {
     const t = getTables(req);
-    const isFire = req.query.mode === 'fire';
-    
-    const ladderNoCol = isFire ? 'point_no' : 'ladder_no';
-    const sectionCol = isFire ? 'location' : 'section';
-    const heightCol = isFire ? 'quantity' : 'height_feet';
-    const typeCol = isFire ? 'extinguisher_type' : 'ladder_type';
+    const mode = req.query.mode || 'ladder';
+    const isFire = mode === 'fire';
+    const isFirstAid = mode === 'firstaid';
+
+    const ladderNoCol = isFire ? 'point_no' : isFirstAid ? 'box_no' : 'ladder_no';
+    const sectionCol = isFire ? 'location' : isFirstAid ? 'location' : 'section';
+    const heightExpr = isFire ? 'i.quantity::text' : isFirstAid ? "''" : 'i.height_feet::text';
+    const typeExpr = isFire ? 'i.extinguisher_type' : isFirstAid ? "''" : 'i.ladder_type';
+    const pressureExpr = isFire ? 'i.pressure_weight' : 'null';
 
     const filters = [];
     const values = [];
@@ -246,11 +282,12 @@ app.get('/api/inspections', requireAdmin, async (req, res, next) => {
     if (req.query.status) { values.push(req.query.status); filters.push(`i.overall_result = $${values.length}`); }
     const where = filters.length ? `where ${filters.join(' and ')}` : '';
     const { rows } = await pool.query(`
-      select i.id, i.inspection_date, i.${ladderNoCol} as ladder_no, i.${sectionCol} as section, i.${heightCol} as height_feet, i. as ladder_type, 
-             (case when =\'fire\' then i.pressure_weight else null end) as pressure_weight,
+      select i.id, i.inspection_date, i.${ladderNoCol} as ladder_no, i.${sectionCol} as section,
+             ${heightExpr} as height_feet, ${typeExpr} as ladder_type,
+             ${pressureExpr} as pressure_weight,
              i.inspector_name, i.overall_result, i.remarks, i.created_at,
              count(r.id)::int as answer_count,
-             count(*) filter (where r.result = 'FAIL')::int as fail_count
+             count(*) filter (where r.result = 'FAIL' or r.result = 'EXPIRED')::int as fail_count
         from ${t.inspections} i
         left join ${t.results} r on r.inspection_id = i.id
         ${where}
@@ -267,9 +304,11 @@ app.get('/api/inspections', requireAdmin, async (req, res, next) => {
 app.get('/api/inspections/:id', requireAdmin, async (req, res, next) => {
   try {
     const t = getTables(req);
+    const mode = req.query.mode || 'ladder';
+    const catExpr = mode === 'ladder' ? 'r.category_snapshot' : `'${mode}'`;
     const { rows } = await pool.query(`
       select r.display_order_snapshot as order,
-             r.category_snapshot as category,
+             ${catExpr} as category,
              r.question_text_snapshot as question,
              r.result, coalesce(r.answer_label, r.result) as answer_label, r.remarks
         from ${t.results} r

@@ -970,7 +970,7 @@
     /* ── Load questionnaire ── */
     async function loadQuestionnaire() {
       const [questions, options] = await Promise.all([
-        sbFetch('inspection_points?select=id,category,question,question_type,display_order,is_required,allow_remarks&is_active=eq.true&order=display_order.asc'),
+        sbFetch('inspection_points?select=id,category,question,display_order,is_required&is_active=eq.true&order=display_order.asc'),
         sbFetch('question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc')
       ]);
 

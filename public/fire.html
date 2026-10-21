@@ -891,7 +891,7 @@
     /* ── Load questionnaire ── */
     async function loadQuestionnaire() {
       const [questions, options] = await Promise.all([
-        sbFetch('fire_inspection_points?select=id,category,question,question_type,display_order,is_required,allow_remarks&is_active=eq.true&order=display_order.asc'),
+        sbFetch('fire_inspection_points?select=id,question,display_order,is_required&is_active=eq.true&order=display_order.asc'),
         sbFetch('fire_question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc')
       ]);
 
@@ -902,16 +902,15 @@
         return m;
       }, {});
 
-      CHECKLIST_DATA = { fire_extinguisher: [] };
-      questions.forEach(function(q) {
-        var item = Object.assign({}, q, { text: q.question, options: optsByQ[q.id] || [] });
-        if (!CHECKLIST_DATA[item.category]) CHECKLIST_DATA[item.category] = [];
-        CHECKLIST_DATA[item.category].push(item);
-      });
+      CHECKLIST_DATA = {
+        fire_extinguisher: questions.map(function(q) {
+          return Object.assign({}, q, { text: q.question, options: optsByQ[q.id] || [] });
+        })
+      };
 
       var gc = document.getElementById('generalPointsContainer');
       gc.innerHTML = '';
-      if(CHECKLIST_DATA.fire_extinguisher) CHECKLIST_DATA.fire_extinguisher.forEach(function(q) { renderQuestion(q, gc); });
+      CHECKLIST_DATA.fire_extinguisher.forEach(function(q) { renderQuestion(q, gc); });
 
       updateProgress();
       

@@ -1,9 +1,5 @@
 -- Seed: taken verbatim from LADDER-_CHECKLIST.xlsx (24 points: 15 general, 5 extension, 4 step)
 
-insert into checklist_documents (doc_no, title, issued_date, revision, prepared_reviewed_by, approved_by)
-values ('SML/HSE/CL/10', 'LADDER- CHECKLIST', '2026-03-20', '00/00.00.0000',
-        'Management Representative', 'Managing Director');
-
 insert into inspection_points (category, question, display_order) values
   ('general',   'Ladder number available', 1),
   ('general',   'All the rungs, cleats, or steps are in good condition (Broken, missing, bend rungs)', 2),
@@ -29,3 +25,20 @@ insert into inspection_points (category, question, display_order) values
   ('step',      'Loose hinges', 22),
   ('step',      'Loose or bent hinge spreaders', 23),
   ('step',      'Ensure Spreader without damage and locking Mechanism', 24);
+
+-- Add options (PASS / FAIL / N/A) for all ladder inspection points
+insert into question_options (question_id, option_label, option_value, sort_order, is_fail_value)
+select
+  p.id,
+  o.label,
+  o.val,
+  o.sort_order,
+  o.is_fail
+from inspection_points p
+cross join (
+  values
+    ('PASS', 'PASS', 1, false),
+    ('FAIL', 'FAIL', 2, true),
+    ('N/A',  'N/A',  3, false)
+) as o(label, val, sort_order, is_fail)
+order by p.display_order, o.sort_order;
