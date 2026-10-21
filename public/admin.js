@@ -12,21 +12,16 @@ let adminMode = 'ladder';
 
 document.getElementById('adminModeSelector')?.addEventListener('change', (e) => {
   adminMode = e.target.value;
+  window.adminMode = adminMode;
   if (q('questionsTab') && !q('questionsTab').classList.contains('hidden')) loadQuestions();
   if (q('recordsTab') && !q('recordsTab').classList.contains('hidden')) loadRecords();
+  if (q('previewTab') && !q('previewTab').classList.contains('hidden')) renderPreview();
 });
 
 
 /* ─── Utility helpers ────────────────────────────────────── */
 const esc = str => String(str ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const q = id => document.getElementById(id);
-
-function showErrorModal(msg) {
-  const el = q('errorModalText');
-  if (el) el.textContent = msg;
-  const modal = q('errorModal');
-  if (modal) modal.classList.add('active');
-}
 
 const show = el => el?.classList.remove('hidden');
 const hide = el => el?.classList.add('hidden');
@@ -43,6 +38,8 @@ function showErrorModal(msg) {
 }
 
 function sectionBadge(s) {
+  if (s === 'fire_extinguisher' || s === 'fire') return `<span class="badge badge-section-general">Fire Ext</span>`;
+  if (s === 'firstaid') return `<span class="badge badge-section-general">First Aid</span>`;
   const cls = { general: 'badge-section-general', extension: 'badge-section-extension', step: 'badge-section-step' };
   const lbl = { general: 'General', extension: 'Extension', step: 'Step' };
   return `<span class="badge ${cls[s] || 'badge-inactive'}">${lbl[s] || s}</span>`;
@@ -367,19 +364,28 @@ function renderPreview() {
     return;
   }
 
-  const sections = [
-    { key: 'general',   label: '🔧 General Inspection Points', icon: '🔧' },
-    { key: 'extension', label: '🔄 Extension Ladder Specific', icon: '🔄' },
-    { key: 'step',      label: '🪜 Step Ladder Specific',      icon: '🪜' },
-  ];
+  let sections = [];
+  if (adminMode === 'fire') {
+    sections = [{ key: 'fire_extinguisher', label: '🧯 Fire Extinguisher Inspection Checklist' }];
+  } else if (adminMode === 'firstaid') {
+    sections = [{ key: 'firstaid', label: '🩹 First Aid Box Monthly Checklist' }];
+  } else {
+    sections = [
+      { key: 'general',   label: '🔧 General Inspection Points', icon: '🔧' },
+      { key: 'extension', label: '🔄 Extension Ladder Specific', icon: '🔄' },
+      { key: 'step',      label: '🪜 Step Ladder Specific',      icon: '🪜' },
+    ];
+  }
 
   container.innerHTML = sections.map(sec => {
-    const items = questions.filter(x => x.category === sec.key);
+    const items = (adminMode === 'fire' || adminMode === 'firstaid')
+      ? questions
+      : questions.filter(x => x.category === sec.key);
     if (!items.length) return '';
     return `
       <div class="preview-section fade-in">
-        <div class="preview-section-title">${sec.label} <span style="margin-left:auto;font-size:0.75rem;opacity:0.7;">${items.length} questions</span></div>
-        ${items.map((item, i) => `
+        <div class="preview-section-title">${sec.label} <span style="margin-left:auto;font-size:0.75rem;opacity:0.7;">${items.length} items</span></div>
+        ${items.map((item) => `
           <div class="preview-question ${item.is_active ? '' : 'inactive'}" style="${item.is_active ? '' : 'opacity:0.6;'}">
             <span class="preview-num">#${item.display_order}</span>
             <span class="preview-text">${esc(item.question)}${item.is_required ? ' <span style="color:var(--fail);font-size:0.85em;">*</span>' : ''}</span>
@@ -399,6 +405,7 @@ function renderPreview() {
    ═══════════════════════════════════════════════════════════ */
 async function loadRecords() {
   const params = new URLSearchParams();
+  params.set('mode', adminMode);
   const from = q('filterFrom').value;
   const to = q('filterTo').value;
   const ladder = q('filterLadder').value.trim();
@@ -443,25 +450,34 @@ function renderRecords(records) {
     tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📊</div><p>No records match the current filters.</p></div></td></tr>`;
     return;
   }
-  tbody.innerHTML = records.map(r => `
-    <tr>
-      <td class="mono" style="white-space:nowrap;">${r.inspection_date || '—'}</td>
-      <td><strong>${esc(r.ladder_no)}</strong><br><span style="font-size:0.78rem;color:var(--text-2);">${esc(r.section)}</span></td>
-      <td>${esc(r.inspector_name)}<br><span style="font-size:0.78rem;color:var(--text-2);">EPF: ${esc(r.epf_number)}</span></td>
-      <td style="text-transform:capitalize;">${esc(r.ladder_type)}<br><span style="font-size:0.78rem;color:var(--text-2);">${window.adminMode === 'fire' ? r.height_feet : r.height_feet + ' ft'}${window.adminMode === 'fire' && r.pressure_weight ? ' (' + esc(r.pressure_weight) + ')' : ''}</span></td>
-      <td><span class="badge ${r.overall_result === 'PASS' ? 'badge-pass' : 'badge-fail'}">${r.overall_result}</span></td>
-      <td class="mono" style="font-size:0.8rem;">${r.answer_count ?? '—'} / ${r.fail_count > 0 ? `<span style="color:var(--fail);">${r.fail_count} fail</span>` : '<span style="color:var(--pass);">0 fail</span>'}</td>
-      <td>
-        <button class="btn-secondary btn-sm" onclick="toggleRecordDetails('${r.id}', this)" style="padding: 4px 8px; font-size: 0.75rem;">View Details</button>
-        <button class="btn-primary btn-sm" onclick="printRecord('${r.id}')" style="padding: 4px 8px; font-size: 0.75rem; margin-left: 4px;">PDF</button>
-      </td>
-    </tr>
-    <tr id="details-${r.id}" class="record-details hidden" style="background: rgba(0,0,0,0.1);">
-      <td colspan="7" style="padding: 0;">
-        <div class="details-content" style="padding: 16px; border-left: 3px solid var(--primary);">Loading...</div>
-      </td>
-    </tr>
-  `).join('');
+  tbody.innerHTML = records.map(r => {
+    const idLabel = adminMode === 'firstaid' ? 'Box: ' : adminMode === 'fire' ? 'Point: ' : 'Ladder: ';
+    const typeHeight = adminMode === 'firstaid'
+      ? 'First Aid Kit'
+      : (adminMode === 'fire'
+          ? `${esc(r.ladder_type)}${r.height_feet ? ' · Qty: ' + esc(r.height_feet) : ''}${r.pressure_weight ? ' (' + esc(r.pressure_weight) + ')' : ''}`
+          : `${esc(r.ladder_type)}<br><span style="font-size:0.78rem;color:var(--text-2);">${r.height_feet ? r.height_feet + ' ft' : ''}</span>`);
+
+    return `
+      <tr>
+        <td class="mono" style="white-space:nowrap;">${r.inspection_date ? String(r.inspection_date).split('T')[0] : '—'}</td>
+        <td><strong>${idLabel}${esc(r.ladder_no)}</strong><br><span style="font-size:0.78rem;color:var(--text-2);">${esc(r.section)}</span></td>
+        <td>${esc(r.inspector_name)}<br><span style="font-size:0.78rem;color:var(--text-2);">${r.epf_number ? 'EPF: ' + esc(r.epf_number) : ''}</span></td>
+        <td style="text-transform:capitalize;">${typeHeight}</td>
+        <td><span class="badge ${r.overall_result === 'PASS' ? 'badge-pass' : 'badge-fail'}">${r.overall_result}</span></td>
+        <td class="mono" style="font-size:0.8rem;">${r.answer_count ?? '—'} / ${r.fail_count > 0 ? `<span style="color:var(--fail);">${r.fail_count} fail</span>` : '<span style="color:var(--pass);">0 fail</span>'}</td>
+        <td>
+          <button class="btn-secondary btn-sm" onclick="toggleRecordDetails('${r.id}', this)" style="padding: 4px 8px; font-size: 0.75rem;">View Details</button>
+          <button class="btn-primary btn-sm" onclick="printRecord('${r.id}')" style="padding: 4px 8px; font-size: 0.75rem; margin-left: 4px;">PDF</button>
+        </td>
+      </tr>
+      <tr id="details-${r.id}" class="record-details hidden" style="background: rgba(0,0,0,0.1);">
+        <td colspan="7" style="padding: 0;">
+          <div class="details-content" style="padding: 16px; border-left: 3px solid var(--primary);">Loading...</div>
+        </td>
+      </tr>
+    `;
+  }).join('');
 }
 
 window.toggleRecordDetails = async function(id, btn) {
@@ -554,6 +570,7 @@ q('exportPdfBtn')?.addEventListener('click', () => {
 
 q('exportInspectionsBtn')?.addEventListener('click', () => {
   const params = new URLSearchParams();
+  params.set('mode', adminMode);
   const from = q('filterFrom').value;
   const to = q('filterTo').value;
   const ladder = q('filterLadder').value.trim();
