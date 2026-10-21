@@ -431,11 +431,14 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
             }
           }
 
-          excelRow.getCell(1).value = row['Box No'] || '';
-          excelRow.getCell(2).value = row['Location'] || '';
+          excelRow.getCell(1).value = row['Date'] || '';
+          excelRow.getCell(2).value = row['Inspector Name'] || '';
+          excelRow.getCell(3).value = row['EPF Number'] || '';
+          excelRow.getCell(4).value = row['Box No'] || '';
+          excelRow.getCell(5).value = row['Location'] || '';
 
-          // Question items from col 3 to 20
-          for (let c = 3; c <= 20; c++) {
+          // Question items from col 6 to 23
+          for (let c = 6; c <= 23; c++) {
             const h = headers[c];
             if (!h) continue;
             const cleanH = h.replace(/[^\w\s]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
@@ -449,25 +452,23 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
             excelRow.getCell(c).value = matchedVal || '';
           }
 
-          // Remark in col 21
-          const allRemarks = [];
-          if (row['Overall Remarks']) allRemarks.push(row['Overall Remarks']);
-          if (row.item_remarks && row.item_remarks.length) allRemarks.push(row.item_remarks.join('; '));
-          excelRow.getCell(21).value = allRemarks.join(' | ') || '';
+          // Individual Remarks in col 24
+          excelRow.getCell(24).value = row.item_remarks && row.item_remarks.length ? row.item_remarks.join('; ') : '';
 
-          // Metadata in cols 23-26
-          excelRow.getCell(23).value = row['Date'] || '';
-          excelRow.getCell(24).value = row['Inspector Name'] || '';
-          excelRow.getCell(25).value = row['EPF Number'] || '';
-          excelRow.getCell(26).value = row['Overall Result'] || '';
+          // Overall Remark in col 25
+          excelRow.getCell(25).value = row['Overall Remarks'] || '';
+
+          // Overall Result in col 26
+          const resultCell = excelRow.getCell(26);
+          resultCell.value = row['Overall Result'] || '';
+          if (row['Overall Result'] === 'FAIL') {
+            resultCell.font = Object.assign({}, resultCell.font || {}, { color: { argb: 'FFFF0000' }, bold: true });
+          } else if (row['Overall Result'] === 'PASS') {
+            resultCell.font = Object.assign({}, resultCell.font || {}, { color: { argb: 'FF008000' }, bold: true });
+          }
 
           excelRow.commit();
         });
-
-        sheet.getCell(9, 23).value = 'Date';
-        sheet.getCell(9, 24).value = 'Inspector Name';
-        sheet.getCell(9, 25).value = 'EPF Number';
-        sheet.getCell(9, 26).value = 'Overall Result';
 
         buffer = await workbook.xlsx.writeBuffer();
       } catch (tmplErr) {
