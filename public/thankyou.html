@@ -19,8 +19,10 @@
     
     body {
       margin: 0;
-      padding: 0;
+      padding: 16px;
+      box-sizing: border-box;
       min-height: 100vh;
+      min-height: 100svh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -35,8 +37,8 @@
       border: 1px solid var(--c-border);
       border-radius: var(--r-md);
       padding: 60px 40px;
-      max-width: 500px;
-      width: 90%;
+      width: min(580px, 100%);
+      box-sizing: border-box;
       box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
@@ -86,13 +88,25 @@
       background: var(--c-accent-hover);
       transform: translateY(-2px);
     }
+
+    @media (max-width: 430px) {
+      .thank-you-card {
+        padding: 40px 20px;
+      }
+      .icon-wrapper {
+        margin-bottom: 24px;
+      }
+      p {
+        margin-bottom: 32px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="thank-you-card">
     <div class="icon-wrapper">🛡️</div>
     <h1>Thank You!</h1>
-    <p>Your ladder safety inspection has been successfully submitted and recorded. Maintaining a safe workplace is our top priority.</p>
+    <p>Your safety inspection has been successfully submitted and recorded. Maintaining a safe workplace is our top priority.</p>
     <a href="/" class="btn">
       <span>Return to Dashboard</span>
       <span>→</span>

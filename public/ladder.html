@@ -478,7 +478,13 @@
       }
 
       .modal-overlay { padding: 12px; align-items: flex-end; }
-      .modal-card { max-width: 100%; border-radius: 16px 16px 0 0; }
+      .modal-card {
+        max-width: 100%;
+        max-height: calc(100dvh - 24px);
+        overflow-x: hidden;
+        overflow-y: auto;
+        border-radius: 16px 16px 0 0;
+      }
       .modal-banner { padding: 24px 16px; }
       .modal-result-icon { font-size: 3rem; }
       .modal-result-title { font-size: 1.4rem; }
@@ -487,7 +493,13 @@
       .modal-table td { padding: 8px 6px; font-size: 0.8rem; }
       .modal-actions { flex-direction: column; gap: 8px; }
       .modal-actions .btn-secondary,
-      .modal-actions .btn-primary { height: 48px; font-size: 0.85rem; border-radius: 8px; }
+      .modal-actions .btn-primary {
+        flex: 0 0 52px;
+        width: 100%;
+        min-height: 52px;
+        font-size: 0.9rem;
+        border-radius: 8px;
+      }
       .tagout-notice { font-size: 0.78rem; padding: 10px 12px; }
 
       .val-alert { font-size: 0.78rem; padding: 10px 12px; }
