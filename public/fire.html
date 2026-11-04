@@ -635,6 +635,7 @@
             <div>
               <label class="form-label" for="pressureWeight">Pressure/Weight</label>
               <input type="text" id="pressureWeight" class="form-input" placeholder="e.g. 150 PSI / 9.5 kg">
+              <span class="error-msg" id="err-pressureWeight"></span>
             </div>
 
           </div>
@@ -753,11 +754,17 @@
   </div>
 
   <!-- ═══ SCRIPT ════════════════════════════════════════════════ -->
+  <script src="questionnaire-config.js?v=20261104"></script>
   <script>
     'use strict';
 
     const SUPABASE_URL = 'https://jqamraigolylhtpvrjgm.supabase.co';
     const SUPABASE_KEY = 'sb_publishable_OJ3iT9XQX7QYAJKE7Nxq0g_zVodgOiN';
+
+    const configuration = new InspectionConfiguration('fire');
+    let questionnaireRequest = 0;
+    let questionnaireSignature = '';
+    let isSubmitting = false;
 
     let CHECKLIST_DATA = { fire_extinguisher: [] };
     let selectedType   = null;
@@ -785,6 +792,7 @@
     /* ── Supabase helpers ── */
     async function sbFetch(path) {
       const r = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        cache: 'no-store',
         headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` }
       });
       if (!r.ok) throw new Error((await r.text()) || 'Network error');
@@ -794,6 +802,7 @@
     async function sbRpc(fn, payload) {
       const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
         method: 'POST',
+        cache: 'no-store',
         headers: {
           apikey: SUPABASE_KEY,
           Authorization: `Bearer ${SUPABASE_KEY}`,
@@ -902,30 +911,34 @@
 
     /* ── Load questionnaire ── */
     async function loadQuestionnaire() {
-      const [questions, options] = await Promise.all([
-        sbFetch('fire_inspection_points?select=id,question,display_order,is_required&is_active=eq.true&order=display_order.asc'),
-        sbFetch('fire_question_options?select=question_id,option_label,option_value,sort_order,is_fail_value&is_active=eq.true&order=sort_order.asc')
-      ]);
+      const request = ++questionnaireRequest;
+      const config = await sbRpc('get_inspection_questionnaire', { mode: 'fire' });
+      if (request !== questionnaireRequest) return;
+      const signature = JSON.stringify(config);
+      if (signature === questionnaireSignature) return;
+      questionnaireSignature = signature;
+      configuration.apply(config);
+      const questions = config.questions || [];
+      CHECKLIST_DATA = { fire_extinguisher: [] };
+      CHECKLIST_DATA.fire_extinguisher = questions;
 
-      /* Map options */
-      const optsByQ = options.reduce(function(m, o) {
-        if (!m[o.question_id]) m[o.question_id] = [];
-        m[o.question_id].push(o);
-        return m;
-      }, {});
-
-      CHECKLIST_DATA = {
-        fire_extinguisher: questions.map(function(q) {
-          return Object.assign({}, q, { text: q.question, options: optsByQ[q.id] || [] });
-        })
-      };
-
+      for (const id of Object.keys(answers)) {
+        const question = questions.find(q => String(q.id) === id);
+        if (!question || !question.options.some(o => o.option_value === answers[id].result)) delete answers[id];
+      }
       var gc = document.getElementById('generalPointsContainer');
       gc.innerHTML = '';
       CHECKLIST_DATA.fire_extinguisher.forEach(function(q) { renderQuestion(q, gc); });
 
+      for (const question of getActiveQuestions()) {
+        const answer = answers[question.id];
+        if (!answer) continue;
+        const radio = Array.from(document.getElementsByName('ans_' + question.id)).find(input => input.value === answer.result);
+        if (radio) { radio.checked = true; onAnswerChange(question.id, answer.result); }
+        const remark = document.getElementById('remark_' + question.id);
+        if (remark) remark.value = answer.remarks || '';
+      }
       updateProgress();
-      
     }
 
     /* ── Validate ── */
@@ -947,22 +960,9 @@
       document.querySelectorAll('.form-input').forEach(function(el) { el.classList.remove('is-invalid'); });
       document.querySelectorAll('.q-card').forEach(function(c) { c.classList.remove('needs-answer'); c.style.removeProperty('border-color'); });
 
-      var inspector = document.getElementById('inspectorName');
-      var epf       = document.getElementById('epfNumber');
-      var date      = document.getElementById('inspectionDate');
-      var pointNo  = document.getElementById('pointNo');
-      var section   = document.getElementById('location');
-      var quantity    = document.getElementById('quantity');
-      var type        = document.getElementById('extinguisherType');
-      var pressureWeight = document.getElementById('pressureWeight');
-
-      if (!inspector.value.trim()) setErr('err-inspectorName', 'Name is required.',           'inspectorName');
-      // if (!epf.value.trim())       setErr('err-epfNumber',     'EPF Number is required.',     'epfNumber');
-      if (!date.value)             setErr('err-inspectionDate','Inspection date is required.', 'inspectionDate');
-      if (!pointNo.value.trim())  setErr('err-pointNo',      'Point number is required.',          'pointNo');
-      if (!section.value.trim())   setErr('err-location', 'Location is required.',     'location');
-      if (!quantity.value.trim()) setErr('err-quantity', 'Quantity is required.', 'quantity');
-      if (!type.value.trim()) setErr('err-extinguisherType', 'Extinguisher Type is required.', 'extinguisherType');
+      for (const error of configuration.validationErrors()) {
+        setErr('err-' + error.id, error.message, error.id === 'ladderType' ? null : error.id);
+      }
 
       var active = getActiveQuestions();
       for (var i = 0; i < active.length; i++) {
@@ -991,10 +991,20 @@
       var alertText = document.getElementById('validationAlertText');
       var submitBtn = document.getElementById('submitBtn');
 
+      if (isSubmitting) return;
+      isSubmitting = true;
+      try {
+        await loadQuestionnaire();
+      } catch (err) {
+        isSubmitting = false;
+        showErrorModal('Could not check the latest questionnaire: ' + err.message);
+        return;
+      }
       alertBox.classList.remove('active');
       var v = validate();
 
       if (v.hasError) {
+        isSubmitting = false;
         showErrorModal('Please resolve all highlighted fields before saving.');
         var target = v.firstErrEl || alertBox;
         target.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1034,6 +1044,7 @@
           .map(function(q) { return { point_id: q.id, result: answers[q.id].result, remarks: answers[q.id].remarks || '' }; })
       };
 
+      payload = configuration.prepare(payload);
       submitBtn.disabled = true;
       submitBtn.textContent = '… Saving';
 
@@ -1062,6 +1073,7 @@
       } catch(err) {
         showErrorModal('Save failed: ' + err.message);
       } finally {
+        isSubmitting = false;
         submitBtn.disabled = false;
         submitBtn.textContent = '✓ Save Inspection';
       }
@@ -1140,12 +1152,22 @@
 
     /* ── Boot ── */
     
-    loadQuestionnaire().catch(function(err) {
-      var alertText = document.getElementById('validationAlertText');
-      var alertBox  = document.getElementById('validationAlert');
-      showErrorModal('Questionnaire could not be loaded: ' + err.message);
-      document.getElementById('submitBtn').disabled = true;
-    });
+    async function refreshQuestionnaire() {
+      if (isSubmitting || document.hidden) return;
+      try {
+        await loadQuestionnaire();
+        document.getElementById('submitBtn').disabled = false;
+      } catch (err) {
+        document.getElementById('submitBtn').disabled = true;
+        showErrorModal('Questionnaire could not be loaded: ' + err.message);
+      }
+    }
+    document.getElementById('submitBtn').disabled = true;
+    refreshQuestionnaire();
+    window.addEventListener('focus', refreshQuestionnaire);
+    window.addEventListener('pageshow', refreshQuestionnaire);
+    document.addEventListener('visibilitychange', function() { if (!document.hidden) refreshQuestionnaire(); });
+    setInterval(refreshQuestionnaire, 15000);
   </script>
 </body>
 </html>
