@@ -1,3 +1,4 @@
+import { deleteQuestion } from './lib/delete-question.cjs';
 import { buildInspectionWorkbook } from './lib/inspection-export.cjs';
 import 'dotenv/config';
 import ExcelJS from 'exceljs';
@@ -126,8 +127,8 @@ async function getQuestions(mode = 'ladder') {
   const tables = getTables({ query: { mode } });
   const isLadder = mode !== 'fire' && mode !== 'firstaid';
   const query = isLadder
-    ? `select id, category, question, display_order, is_required, is_active, created_at, updated_at from ${tables.points} order by display_order, id`
-    : `select id, '${mode}' as category, question, display_order, is_required, is_active, created_at, updated_at from ${tables.points} order by display_order, id`;
+    ? `select id, category, question, display_order, is_required, is_active, created_at, updated_at from ${tables.points} where not is_deleted order by display_order, id`
+    : `select id, '${mode}' as category, question, display_order, is_required, is_active, created_at, updated_at from ${tables.points} where not is_deleted order by display_order, id`;
 
   const { rows: questions } = await pool.query(query);
   const { rows: options } = await pool.query(`
@@ -224,12 +225,14 @@ app.put('/api/questions/:id', requireAdmin, async (req, res, next) => {
   const isLadder = req.query.mode !== 'fire' && req.query.mode !== 'firstaid';
   try {
     await client.query('begin');
+    const { rows: existing } = await client.query(`select id from ${getTables(req).points} where id=$1 and not is_deleted for update`, [req.params.id]);
+    if (!existing.length) throw Object.assign(new Error('Question not found.'), { status: 404 });
     if (isLadder) {
       await client.query(
         `update ${getTables(req).points}
             set category=$1, question=$2, display_order=$3,
                 is_required=$4, is_active=$5, updated_at=now()
-          where id=$6`,
+          where id=$6 and not is_deleted`,
         [q.category || 'general', q.question, q.display_order, !!q.is_required, q.is_active !== false, req.params.id],
       );
     } else {
@@ -237,7 +240,7 @@ app.put('/api/questions/:id', requireAdmin, async (req, res, next) => {
         `update ${getTables(req).points}
             set question=$1, display_order=$2,
                 is_required=$3, is_active=$4, updated_at=now()
-          where id=$5`,
+          where id=$5 and not is_deleted`,
         [q.question, q.display_order, !!q.is_required, q.is_active !== false, req.params.id],
       );
     }
@@ -254,8 +257,8 @@ app.put('/api/questions/:id', requireAdmin, async (req, res, next) => {
 
 app.delete('/api/questions/:id', requireAdmin, async (req, res, next) => {
   try {
-    await pool.query(`update ${getTables(req).points} set is_active=false, updated_at=now() where id=$1`, [req.params.id]);
-    res.json({ ok: true });
+    if (req.query.mode !== undefined && !['ladder', 'fire', 'firstaid'].includes(req.query.mode)) return res.status(400).json({ error: 'Invalid inspection mode.' });
+    res.json(await deleteQuestion(pool, getTables(req), req.params.id));
   } catch (error) {
     next(error);
   }
@@ -381,7 +384,7 @@ app.get('/api/export/inspections', requireAdmin, async (req, res, next) => {
     const tables = getTables(req);
     const { where, values } = inspectionFilters(req);
     const { rows: questions } = await pool.query(`
-      select id, category, question, display_order, is_active, field_key, updated_at
+      select id, category, question, display_order, is_active, is_deleted, field_key, updated_at
       from ${tables.points} order by display_order, id
     `);
     const category = mode === 'ladder' ? 'r.category_snapshot' : `'${mode}'`;

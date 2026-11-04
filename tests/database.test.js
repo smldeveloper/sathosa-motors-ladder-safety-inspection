@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import dotenv from 'dotenv';
 import pg from 'pg';
+import { deleteQuestion } from '../lib/delete-question.cjs';
 
 test('configured submissions and questionnaires agree with activation settings', { skip: process.env.TEST_DATABASE !== '1' }, async t => {
   dotenv.config({ quiet: true });
@@ -32,6 +33,16 @@ test('configured submissions and questionnaires agree with activation settings',
   const migration = readFileSync(new URL('../supabase/migrations/20261104000000_configured_questionnaires.sql', import.meta.url), 'utf8')
     .replaceAll('public.', schema + '.').replaceAll('search_path = public', 'search_path = ' + schema);
   await client.query(migration);
+  const deletionMigration = readFileSync(new URL('../supabase/migrations/20261104010000_question_deletion.sql', import.meta.url), 'utf8')
+    .replaceAll('public.', schema + '.').replaceAll('search_path = public', 'search_path = ' + schema);
+  await client.query(deletionMigration);
+  await client.query(`set local search_path to ${schema}`);
+  const deletionPool = { connect: async () => ({ release() {}, query(sql, values) {
+    if (sql.toLowerCase() === 'begin') return client.query('savepoint deletion_request');
+    if (sql.toLowerCase() === 'commit') return client.query('release savepoint deletion_request');
+    if (sql.toLowerCase() === 'rollback') return client.query('rollback to savepoint deletion_request');
+    return client.query(sql, values);
+  } }) };
   for (const [mode, tables] of Object.entries(modes)) {
     await t.test(mode, async () => {
       const points = `${schema}.${tables[0]}`;
@@ -68,6 +79,10 @@ test('configured submissions and questionnaires agree with activation settings',
       await submit({ ...payload, submission_key: crypto.randomUUID(), inspector_name: null });
       await client.query(`update ${points} set is_active=false where id=10`);
       await submit({ ...payload, submission_key: crypto.randomUUID(), inspector_name: null, results: [] });
+      await deleteQuestion(deletionPool, { points: tables[0], options: tables[1], inspections: tables[2], results: tables[3] }, 3);
+      assert.ok((await client.query(`select inspection_date from ${schema}.${tables[2]}`)).rows.every(row => row.inspection_date === null));
+      const afterDeletion = await submit({ ...payload, submission_key: crypto.randomUUID(), inspector_name: null, results: [] });
+      assert.equal((await client.query(`select inspection_date from ${schema}.${tables[2]} where id=$1`, [afterDeletion.id])).rows[0].inspection_date, null, 'deleted information data cannot reappear through submission defaults');
     });
   }
 });
