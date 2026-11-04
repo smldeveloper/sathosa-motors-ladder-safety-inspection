@@ -36,6 +36,9 @@ test('configured submissions and questionnaires agree with activation settings',
   const deletionMigration = readFileSync(new URL('../supabase/migrations/20261104010000_question_deletion.sql', import.meta.url), 'utf8')
     .replaceAll('public.', schema + '.').replaceAll('search_path = public', 'search_path = ' + schema);
   await client.query(deletionMigration);
+  const typesMigration = readFileSync(new URL('../supabase/migrations/20261104020000_question_answer_types.sql', import.meta.url), 'utf8')
+    .replaceAll('public.', schema + '.').replaceAll('search_path = public', 'search_path = ' + schema);
+  await client.query(typesMigration);
   await client.query(`set local search_path to ${schema}`);
   const deletionPool = { connect: async () => ({ release() {}, query(sql, values) {
     if (sql.toLowerCase() === 'begin') return client.query('savepoint deletion_request');
@@ -83,6 +86,35 @@ test('configured submissions and questionnaires agree with activation settings',
       assert.ok((await client.query(`select inspection_date from ${schema}.${tables[2]}`)).rows.every(row => row.inspection_date === null));
       const afterDeletion = await submit({ ...payload, submission_key: crypto.randomUUID(), inspector_name: null, results: [] });
       assert.equal((await client.query(`select inspection_date from ${schema}.${tables[2]} where id=$1`, [afterDeletion.id])).rows[0].inspection_date, null, 'deleted information data cannot reappear through submission defaults');
+      const types = ['text', 'long_text', 'number', 'date', 'decision', 'yes_no', 'multiple_choice'];
+      for (const [index, type] of types.entries()) {
+        const questionId = 20 + index;
+        await client.query(`insert into ${points} (id,category,question,question_type,display_order,is_required,is_active) values ($1,$2,$3,$4,$1,true,true)`, [questionId, mode === 'ladder' ? 'general' : mode, 'Typed ' + type, type]);
+        if (index >= 4) await client.query(`insert into ${schema}.${tables[1]} (question_id,option_label,option_value,sort_order,is_fail_value,is_active) values ($1,'Good',$2,1,false,true),($1,'Bad','FAIL',2,true,true)`, [questionId, index === 5 ? 'YES' : index === 6 ? 'SAFE' : 'PASS']);
+      }
+      const results = ['FAIL', 'Line one\nLine two', 0, '2026-11-04', 'PASS', 'YES', 'SAFE'].map((value, index) => ({ point_id: 20 + index, value }));
+      const typedPayload = { ...payload, submission_key: crypto.randomUUID(), inspector_name: null, results };
+      const typed = await submit(typedPayload);
+      assert.equal(typed.overall_result, 'PASS', 'free text FAIL must not affect the safety result');
+      const typedRows = (await client.query(`select * from ${schema}.${tables[3]} where inspection_id=$1 order by inspection_point_id`, [typed.id])).rows;
+      assert.equal(typedRows.length, 7);
+      assert.deepEqual(typedRows.map(row => row.question_type_snapshot), types);
+      assert.equal(typedRows[0].answer_value, 'FAIL');
+      assert.equal(typedRows[0].answer_label, 'FAIL');
+      assert.equal(typedRows[0].result, 'ANSWERED');
+      assert.equal(typedRows[1].answer_value, 'Line one\nLine two');
+      assert.equal(typedRows[2].answer_value, 0);
+      assert.equal(typedRows[3].answer_value, '2026-11-04');
+      for (const [index, invalid] of [[0, ' \n\t'], [0, []], [2, 'NaN'], [2, null], [3, '2026-02-30'], [5, 'unknown']]) {
+        await client.query('savepoint invalid_typed_answer');
+        await assert.rejects(submit({ ...typedPayload, submission_key: crypto.randomUUID(), results: results.map((answer, i) => i === index ? { ...answer, value: invalid } : answer) }));
+        await client.query('rollback to savepoint invalid_typed_answer');
+      }
+      const withDefect = await submit({ ...typedPayload, submission_key: crypto.randomUUID(), results: results.map(answer => answer.point_id === 26 ? { ...answer, value: 'FAIL', remarks: 'Defect found' } : answer) });
+      assert.equal(withDefect.overall_result, 'FAIL');
+      await client.query(`update ${points} set is_required=false where id=20`);
+      const optional = await submit({ ...typedPayload, submission_key: crypto.randomUUID(), results: results.filter(answer => answer.point_id !== 20) });
+      assert.equal((await client.query(`select count(*)::int as count from ${schema}.${tables[3]} where inspection_id=$1`, [optional.id])).rows[0].count, 6);
     });
   }
 });

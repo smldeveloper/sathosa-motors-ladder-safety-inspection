@@ -676,6 +676,7 @@
 
   <!-- ═══ SCRIPT ════════════════════════════════════════════════ -->
   <script src="questionnaire-config.js?v=20261104"></script>
+  <script src="questionnaire-answers.js?v=20261104-types"></script>
   <script>
     'use strict';
 
@@ -738,84 +739,16 @@
 
     /* ── Render question ── */
     function renderQuestion(item, container) {
-      // Default options: Present / Missing / Expired
-      const opts = (item.options && item.options.length) ? item.options : [
-        { option_label: 'Present', option_value: 'PASS',    is_fail_value: false, cls: 'present', icon: '✓' },
-        { option_label: 'Missing', option_value: 'FAIL',    is_fail_value: true,  cls: 'missing', icon: '✕' },
-        { option_label: 'Expired', option_value: 'EXPIRED', is_fail_value: true,  cls: 'expired', icon: '⚠' }
-      ];
-
-      // Map DB options to display classes
-      function getOptClass(o) {
-        if (!o.is_fail_value) return 'present';
-        const lbl = (o.option_label || '').toLowerCase();
-        if (lbl.includes('expir')) return 'expired';
-        return 'missing';
-      }
-      function getOptIcon(o) {
-        if (!o.is_fail_value) return '✓';
-        const lbl = (o.option_label || '').toLowerCase();
-        if (lbl.includes('expir')) return '⚠';
-        return '✕';
-      }
-
-      const decHtml = opts.map(o => {
-        const cls  = o.cls || getOptClass(o);
-        const icon = o.icon || getOptIcon(o);
-        return `<label class="d-opt ${cls}">
-          <input type="radio" name="ans_${item.id}" value="${esc(o.option_value)}" onchange="onAnswerChange(${item.id}, this.value)">
-          <div class="d-btn"><span>${icon}</span><span>${esc(o.option_label)}</span></div>
-        </label>`;
-      }).join('');
-
-      const isOptional = !item.is_required;
-      const card = document.createElement('div');
-      card.className = 'q-card';
-      card.id = `qcard-${item.id}`;
-      card.innerHTML = `
-        <div class="q-meta">
-          <div class="q-status" id="qstatus-${item.id}">○</div>
-          <span class="q-num">#${item.display_order || item.id}</span>
-          <span class="q-text">${esc(item.question || item.text)}${item.is_required ? ' <span style="color:var(--c-accent)">*</span>' : '<span class="q-optional">(optional)</span>'}</span>
-        </div>
-        <div class="decision-row">${decHtml}</div>
-        <div class="fail-remarks" id="failBox_${item.id}" style="display:none;">
-          <div class="fail-remarks-label">⚠ Describe Issue / Action Required</div>
-          <textarea class="form-textarea" id="remark_${item.id}" rows="2"
-            placeholder="e.g. Item completely missing, needs immediate restocking…"
-            oninput="onRemarkChange(${item.id}, this.value)"></textarea>
-          <span class="error-msg" id="err-remark-${item.id}"></span>
-        </div>`;
-      container.appendChild(card);
+      InspectionAnswers.render(item, container, answers, window.onAnswerChange, window.onRemarkChange);
     }
 
-    /* ── Answer change ── */
     window.onAnswerChange = function(id, val) {
-      answers[id] = answers[id] || { result: null, remarks: '' };
-      answers[id].result = val;
-
-      const q    = findQuestion(id);
-      const card = document.getElementById('qcard-' + id);
-      const stat = document.getElementById('qstatus-' + id);
-      const box  = document.getElementById('failBox_' + id);
-
-      card.classList.remove('is-pass','is-fail','is-warn','needs-answer');
-      card.style.removeProperty('border-color');
-
-      const isFail = isFailAnswer(q, answers[id]);
-
-      if (val === 'PASS' || val === 'Present') {
-        card.classList.add('is-pass'); stat.textContent = '✓'; box.style.display = 'none';
-      } else if (val === 'EXPIRED' || (val !== 'PASS' && (q.options || []).find(o => o.option_value === val && o.option_label && o.option_label.toLowerCase().includes('expir')))) {
-        card.classList.add('is-warn'); stat.textContent = '⚠'; box.style.display = 'block';
-      } else if (isFail) {
-        card.classList.add('is-fail'); stat.textContent = '✕'; box.style.display = 'block';
-      }
+      InspectionAnswers.change(findQuestion(id), answers, val);
       updateProgress();
     };
 
     window.onRemarkChange = function(id, text) {
-      answers[id] = answers[id] || { result: 'FAIL', remarks: '' };
+      answers[id] = answers[id] || { result: null, remarks: '' };
       answers[id].remarks = text;
       document.getElementById('err-remark-' + id).textContent = '';
     };
@@ -830,15 +763,13 @@
     }
 
     function isFailAnswer(q, ans) {
-      if (!q || !ans || !ans.result) return false;
-      const opt = (q.options || []).find(o => o.option_value === ans.result);
-      return ans.result === 'FAIL' || ans.result === 'EXPIRED' || (opt && opt.is_fail_value === true);
+      return InspectionAnswers.isFail(q, ans);
     }
 
     function updateProgress() {
       const active = getActiveQuestions();
       const total  = active.length;
-      const done   = active.filter(q => answers[q.id] && answers[q.id].result).length;
+      const done   = active.filter(q => InspectionAnswers.hasValue(answers[q.id])).length;
       const pct    = total ? Math.round((done / total) * 100) : 0;
 
       document.getElementById('progressFill').style.width = pct + '%';
@@ -861,20 +792,13 @@
 
       for (const id of Object.keys(answers)) {
         const question = questions.find(q => String(q.id) === id);
-        if (!question || !question.options.some(o => o.option_value === answers[id].result)) delete answers[id];
+        if (!question || !InspectionAnswers.isCompatible(question, answers[id])) delete answers[id];
       }
       var gc = document.getElementById('checklistContainer');
       gc.innerHTML = '';
       CHECKLIST_DATA.firstaid.forEach(function(q) { renderQuestion(q, gc); });
 
-      for (const question of getActiveQuestions()) {
-        const answer = answers[question.id];
-        if (!answer) continue;
-        const radio = Array.from(document.getElementsByName('ans_' + question.id)).find(input => input.value === answer.result);
-        if (radio) { radio.checked = true; onAnswerChange(question.id, answer.result); }
-        const remark = document.getElementById('remark_' + question.id);
-        if (remark) remark.value = answer.remarks || '';
-      }
+      for (const question of getActiveQuestions()) InspectionAnswers.restore(question, answers[question.id]);
       updateProgress();
     }
 
@@ -905,7 +829,13 @@
       for (var i = 0; i < active.length; i++) {
         var q   = active[i];
         var ans = answers[q.id];
-        var hasVal = ans && ans.result != null && String(ans.result).trim() !== '';
+        var hasVal = InspectionAnswers.hasValue(ans);
+        var answerError = InspectionAnswers.validationError(q, ans);
+        if (answerError) {
+          hasError = true;
+          document.getElementById('err-answer-' + q.id).textContent = answerError;
+          if (!firstErrEl) firstErrEl = document.getElementById('answer_' + q.id) || document.getElementById('qcard-' + q.id);
+        }
         if (q.is_required && !hasVal) {
           hasError = true;
           var card = document.getElementById('qcard-' + q.id);
@@ -969,8 +899,8 @@
         location:        locationVal,
         remarks:         overallRemarks,
         results: active
-          .filter(function(q) { return answers[q.id] && answers[q.id].result; })
-          .map(function(q) { return { point_id: q.id, result: answers[q.id].result, remarks: answers[q.id].remarks || '' }; })
+          .filter(function(q) { return InspectionAnswers.hasValue(answers[q.id]); })
+          .map(function(q) { return InspectionAnswers.serialize(q, answers[q.id]); })
       };
 
       payload = configuration.prepare(payload);
